@@ -313,3 +313,17 @@ learning_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, 
 
 
 
+##flag(常量)
+flags = tf.app.flags
+FLAGS = flags.FLAGS
+#定义(名字,值,描述)
+flags.DEFINE_bool('is_ok', False, 'help desc')
+flags.DEFINE_integer('epochs', 10, 'train times')
+flags.DEFINE_string('data_dir', '/tmp/data', 'dir of data')
+#使用
+print(FLAGS.data_dir)
+
+
+
+#tensor board
+tensorboard --logdir=/tmp/mnist_logs/train/ -port=2213
