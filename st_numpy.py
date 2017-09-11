@@ -186,7 +186,7 @@ b = random.permutation(a)#相当于shuffle
 
 #tmp
 b = np.abs(a)
-b = np.absolute(a)
+b = np.absolute(a)#支持复数
 #np.absolute_import
 c = np.add(a,b)
 #np.add_docstring
@@ -317,248 +317,248 @@ np.delete(a, ixs, axis=None)#删除axis下某些下标对应的行,没axis时会
 np.diag(a)#输入什么输出另一个(对角线向量<->对角矩阵)
 np.diag_indices(n, ndim=2)#生成对角线的分布下标
 np.diag_indices_from(a)#生成该矩阵对角线的分布下标
-np.diagflat(obj, k=0)#把obj进行flat后,生成对角线矩阵,k是对角线偏移量,k=0表示obj是对角线
+np.diagflat(obj, k=0)#obj进行flat后,生成对角线矩阵,k是对角线偏移量,k=0表示obj是对角线
 np.diagonal(a)#返回a的对角线,还有更复杂的功能
 np.diff(a, n=1)#n阶差分
-np.digitize()
-np.disp()
+np.digitize(x, y, right=False)#x的每个元素在有序数组y中二分,返回在y中的下标,right为true表示下界,false表示上界
+#np.disp
 np.divide(a, b)
 np.division(a, b)#整数除法
 np.divmod(a, b)#返回商和余数
 np.dot(a, b)
 np.double#np.float64
-np.dsplit
-np.dstack
+np.dsplit(a, n)#np.split(a, n, axis=2)
+np.dstack(arrays)#np.concatenate(arrays, axis=2)
 np.dtype
 np.e
-np.ediff1d
-np.einsum
-np.einsum_path
-np.emath
-np.empty
-np.empty_like
-np.equal
-np.errstate
+np.ediff1d(a, to_end=None, to_begin=None)#a进行flat后求差分,并在首尾插入to_begin和to_end,它们可以是标量或数组
+#np.einsum
+#np.einsum_path
+#np.emath
+np.empty(shape)
+np.empty_like(a)
+np.equal(a, b)#==
+#np.errstate
 np.euler_gamma
-np.exp
-np.exp2
-np.expand_dims
-np.expm1
-np.extract
-np.eye
-np.fabs
-np.fastCopyAndTranspose
-np.fft
-np.fill_diagonal
-np.find_common_type
-np.finfo
-np.fix
-np.flatiter
-np.flatnonzero
-np.flexible
-np.flip
-np.fliplr
-np.flipud
+np.exp(a)
+np.exp2(a)
+np.expand_dims(a, axis)#插入一个长度为1的维度
+np.expm1(a)#np.exp(a)-1
+np.extract(condition, a)#condition的shape和a的要相同,符合条件的会选出来变成1维数组,相当于a[b]
+np.eye(n, M=None, k=0)#单位矩阵,n是行数,M是列数默认等于n,k是对角线偏移量
+np.fabs(a)#不支持复数
+#np.fastCopyAndTranspose
+##np.fft(a)
+np.fill_diagonal(a, x)#x填入a的对角线
+#np.find_common_type
+np.finfo(dtype)#浮点数的上下限等信息
+np.fix(a)#往0的方向取整
+#np.flatiter
+np.flatnonzero(a)#返回flat后的a中非0的元素下标
+#np.flexible
+np.flip(a, axis)#reverse
+np.fliplr(a)#np.flip(a, 1)
+np.flipud(a)#np.flip(a, 0)
 np.float
 np.float16
 np.float32
 np.float64
-np.float_
-np.float_power
-np.floating
-np.floor
-np.floor_divide
-np.fmax
-np.fmin
-np.fmod
-np.format_parser
-np.frexp
-np.frombuffer
-np.fromfile
-np.fromfunction
-np.fromiter
-np.frompyfunc
-np.fromregex
-np.fromstring
-np.full
-np.full_like
-np.fv
-np.generic
-np.genfromtxt
-np.geomspace
-np.get_array_wrap
-np.get_include
-np.get_printoptions
-np.getbufsize
-np.geterr
-np.geterrcall
-np.geterrobj
-np.gradient
-np.greater
-np.greater_equal
-np.half
-np.hamming
-np.hanning
-np.heaviside
-np.histogram
-np.histogram2d
-np.histogramdd
-np.hsplit
-np.hstack
-np.hypot
-np.i0
-np.identity
-np.iinfo
-np.imag
-np.in1d
-np.index_exp
-np.indices
-np.inexact
+np.float_#np.float64
+np.float_power(a, b)#a**b
+#np.floating
+#np.floor
+np.floor_divide(a, b)#np.floor(a/b)
+np.fmax(a, b)#优先不返回np.nan
+np.fmin(a, b)
+np.fmod(a, b)#a%b
+#np.format_parser
+np.frexp(a)#返回(m,e),a=m*2**e,其中0<=m<1
+np.frombuffer(buf, dtype=np.float, count=-1, offset=0)
+np.fromfile(file, dtype=np.float, count=-1, sep='')
+np.fromfunction(func, shape)#func的参数是下标,返回值
+np.fromiter(iter, dtype, count=-1)
+#np.frompyfunc
+#np.fromregex
+np.fromstring(str, dtype=np.float, count=-1, sep='')
+np.full(shape, x)
+np.full_like(a, x)
+#np.fv
+#np.generic
+#np.genfromtxt
+np.geomspace(start, stop, num, endpoint=True)#生成几何级数,endpoint表明是否右闭
+#np.get_array_wrap
+#np.get_include
+#np.get_printoptions
+#np.getbufsize
+#np.geterr
+#np.geterrcall
+#np.geterrobj
+np.gradient(a)#求梯度
+np.greater(a, b)#>
+np.greater_equal(a ,b)#>=
+np.half#np.float16
+#np.hamming
+#np.hanning
+np.heaviside(a, b)#a<0 -> 0, a==0 -> b, a>0 -> 1
+#np.histogram
+#np.histogram2d
+#np.histogramdd
+np.hsplit(a, n)#np.split(a, n, axis=1)
+np.hstack(arrays)#np.stack(arrays, axis=1)
+np.hypot(a, b)#sqrt(a**2+b**2)
+#np.i0
+np.identity(n)#单位矩阵
+np.iinfo(dtype)#整数的信息
+np.imag(a)#虚部
+np.in1d(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
+#np.index_exp
+np.indices(shape)#生成分布下标
+#np.inexact
 np.inf
-np.info
+np.info(obj)#输出帮助信息,obj是对象或者字符串
 np.infty
-np.inner
-np.insert
+np.inner(a, b)#内积
+np.insert(a, ixs, val, axis=None)
 np.int
-np.int0
+np.int0#np.int64
 np.int16
 np.int32
 np.int64
 np.int8
-np.int_
-np.int_asbuffer
-np.intc
+np.int_#np.int32
+#np.int_asbuffer
+np.intc#np.int32
 np.integer
-np.interp
-np.intersect1d
-np.intp
-np.invert
-np.ipmt
-np.irr
-np.is_busday
-np.isclose
-np.iscomplex
-np.iscomplexobj
-np.isfinite
-np.isfortran
-np.isin
-np.isinf
-np.isnan
-np.isnat
-np.isneginf
-np.isposinf
-np.isreal
-np.isrealobj
-np.isscalar
-np.issctype
-np.issubclass_
-np.issubdtype
-np.issubsctype
-np.iterable
-np.ix_
-np.kaiser
-np.kron
-np.ldexp
-np.left_shift
-np.less
-np.less_equal
-np.lexsort
-np.lib
-np.linalg
-np.linspace
-np.little_endian
-np.load
-np.loads
-np.loadtxt
-np.log
-np.log10
-np.log1p
-np.log2
-np.logaddexp
-np.logaddexp2
-np.logical_and
-np.logical_not
-np.logical_or
-np.logical_xor
-np.logspace
-np.long
-np.longcomplex
-np.longdouble
-np.longfloat
-np.longlong
-np.lookfor
-np.ma
-np.mafromtxt
-np.mask_indices
-np.mat
-np.math
-np.matmul
-np.matrix
-np.matrixlib
-np.max
-np.maximum
-np.maximum_sctype
-np.may_share_memory
-np.mean
-np.median
-np.memmap
-np.meshgrid
-np.mgrid
-np.min
-np.min_scalar_type
-np.minimum
-np.mintypecode
-np.mirr
-np.mod
-np.modf
-np.moveaxis
-np.msort
-np.multiply
+#np.interp
+#np.intersect1d
+np.intp#np.int64
+np.invert(a)#np.bitwise_not
+#np.ipmt
+#np.irr
+#np.is_busday
+np.isclose(a, b)#是否接近
+np.iscomplex(a)
+np.iscomplexobj(a)#至少有一个复数
+np.isfinite(a)
+np.isfortran(a)
+np.isin(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
+np.isinf(a)
+np.isnan(a)
+np.isnat(a)#is not a time
+np.isneginf(a)
+np.isposinf(a)
+np.isreal(a)
+np.isrealobj(a)#是否完全没有复数
+np.isscalar(a)
+np.issctype(a)#is scalar type
+#np.issubclass_
+#np.issubdtype
+#np.issubsctype
+np.iterable(a)#是否能遍历
+#np.ix_
+#np.kaiser
+np.kron(a, b)#kron积(张量积)
+np.ldexp(a, b)#a*2**b
+np.left_shift(a, b)#a<<b
+np.less(a, b)#a<b
+np.less_equal(a, b)#a<=b
+np.lexsort(arrays)#按keys进行sort然后返回下标
+##np.lib
+##np.linalg
+np.linspace(start, stop, num=50, endpoint=True, retstep=False)#生成算术级数(等差数列),retstep为true返回(数列,公差)
+np.little_endian#true,小端格式
+np.load(file, encoding='ACSII')
+np.loads(file, encoding='ACSII')
+#np.loadtxt(file, dtype=np.float)
+np.log(a)#ln(x)
+np.log10(a)#lg(x)
+np.log1p(a)#ln(1+x)
+np.log2(a)#log2(x)
+np.logaddexp(a, b)#ln(e^a+a^b)
+np.logaddexp2(a, b)#log2(2^a+2^b)
+np.logical_and(a, b)
+np.logical_not(a)
+np.logical_or(a, b)
+np.logical_xor(a, b)
+np.logspace(start, stop, num=50, endpoint=True, base=10.0)#对算术级数取指数
+np.long#np.int
+np.longcomplex#np.complex128
+np.longdouble#np.float64
+np.longfloat#np.float64
+np.longlong#np.int64
+#np.lookfor
+##np.ma
+#np.mafromtxt
+#np.mask_indices
+np.mat(obj)
+##np.math
+np.matmul(a, b)
+np.matrix(obj)
+##np.matrixlib
+np.max(a)#np.amax
+np.maximum(a, b)
+np.maximum_sctype(obj)#返回这个数据可能的最高类型
+np.may_share_memory(a, b)#是否占用共同的内存
+np.mean(a)#均值
+np.median(a)#中位数
+#np.memmap
+#np.meshgrid
+#np.mgrid
+np.min(a)#amin
+np.min_scalar_type(obj)#返回这个数据可能的最低类型
+np.minimum(a, b)
+#np.mintypecode
+#np.mirr
+np.mod(a, b)#a%b
+np.modf(a)#返回(小数部分,整数部分)
+np.moveaxis(a, src, dst)#高级转置
+np.msort(a)#np.sort(a, axis=0)
+np.multiply(a, b)
 np.nan
-np.nan_to_num
-np.nanargmax
-np.nanargmin
-np.nancumprod
-np.nancumsum
-np.nanmax
-np.nanmean
-np.nanmedian
-np.nanmin
-np.nanpercentile
-np.nanprod
-np.nanstd
-np.nansum
-np.nanvar
-np.nbytes
+np.nan_to_num(a)#把非数字改成极端数字
+np.nanargmax(a)#不考虑np.nan
+np.nanargmin(a)
+np.nancumprod(a)#把np.nan当成1
+np.nancumsum(a)#把np.nan当成0
+np.nanmax(a)
+np.nanmean(a)#不统计np.nan
+np.nanmedian(a)
+np.nanmin(a)
+np.nanpercentile(a)
+np.nanprod(a)
+np.nanstd(a)
+np.nansum(a)
+np.nanvar(a)
+np.nbytes#dict,记录类型所占字节数
 np.ndarray
-np.ndenumerate
-np.ndfromtxt
-np.ndim
-np.ndindex
-np.nditer
-np.negative
-np.nested_iters
-np.newaxis
-np.nextafter
-np.nonzero
-np.not_equal
-np.nper
-np.npv
-np.numarray
-np.number
-np.obj2sctype
+np.ndenumerate(a)#迭代器,生成(全下标,值)
+#np.ndfromtxt
+np.ndim(a)#维度数,a.shape.size
+np.ndindex(*shape)#迭代器,生成全下标
+#np.nditer
+np.negative(a)#-a
+#np.nested_iters
+#np.newaxis
+np.nextafter(a, b)#返回a向b方向的下一个浮点值
+np.nonzero(a)#返回非0的分布下标
+np.not_equal(a, b)#a!=b
+#np.nper
+#np.npv
+#np.numarray
+#np.number
+np.obj2sctype(obj)#obj在np里的type
 np.object
-np.object0
+np.object0#np.object_
 np.object_
-np.ogrid
-np.oldnumeric
-np.ones
-np.ones_like
-np.outer
-np.packbits
-np.pad
-np.partition
-np.percentile
+#np.ogrid
+#np.oldnumeric
+np.ones(shape)
+np.ones_like(a)
+np.outer(a, b)#外积
+#np.packbits#按位拼
+#np.pad
+#np.partition
+np.percentile(a, q)#求百分数
 np.pi
 np.piecewise
 np.pkgload
