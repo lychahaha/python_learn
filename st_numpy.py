@@ -77,6 +77,9 @@ b = a<1
 b = a<a
 #(大于,等于,与或非...同理)
 
+#
+c = np.maximum(a,b)
+c = np.minimum(a,b)
 
 #矩阵运算
 c = dot(a, b)#矩阵乘法

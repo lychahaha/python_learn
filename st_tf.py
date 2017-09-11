@@ -112,8 +112,8 @@ c = tf.unsorted_segment_sum(a,seg_ids)#seg_id不需要升序
 ##下标运算
 c = tf.argmax(a, dimension)#dimension表明按照哪个维度进行规约
 c = tf.argmin(a, dimension)
-c = tf.listdiff(a, ids)#根据下标ids在a里取值
 c = tf.invert_permutation(a)#求置换a的逆,a必须是个排列
+c = tf.gather(a, ixs)# 根据下标取值
 ###布尔下标运算
 c = tf.where(a)#返回a中每个true的坐标,输出是2维(每个true,坐标的每个维度)
 ###去重
@@ -137,9 +137,14 @@ c = tf.nn.relu6(a)#min(relu(a),6)
 c = tf.nn.softplus(a)#log(exp(a)+1)
 c = tf.sigmoid(a)#1/(1+exp(-a))
 c = tf.tanh(a)
+##字符串处理
+c = a + b
+c = tf.string_split(a, '/').values
+c = tf.string_join([a,b], '/')
 ##类型转换
 c = tf.cast(a, tf.float32)
-c = tf.string_to_number(a)
+c = tf.string_to_number(a, tf.float32) # str->num
+c = tf.as_string(a) # num->str
 c = tf.to_double(a)
 c = tf.to_float(a)
 c = tf.to_bfloat16(a)
@@ -159,6 +164,8 @@ c = tf.shape(a)
 c = tf.size(a)
 c = tf.rank(a)
 
+#
+c = py_func(func, [np_a,np_b], tf.int32)
 
 #update = tf.assign(c,a)
 ##赋值
@@ -171,6 +178,11 @@ update = a.assign_sub(b)
 tf.constant_initializer(1)
 tf.contrib.layers.xavier_initializer()
 tf.contrib.layers.variance_scaling_initializer()#he init
+tf.random_normal_initializer()
+tf.truncated_normal_initializer()
+tf.zeros_initializer()
+tf.ones_initializer()
+tf.random_uniform_initializer()
 
 
 
