@@ -198,8 +198,11 @@ tf.device("/gpu:0")
 
 #保存与载入
 saver = tf.train.Saver()
+saver = tf.train.Saver([a,b,c...])
 save_path = saver.save(sess, "/tmp/model.ckpt")
+save_path = saver.save(sess, "/tmp/model.ckpt", global_step=i)
 saver.restore(sess, "/tmp/model.ckpt")
+saver.restore(sess, "/tmp/model.ckpt-"+str(i))
 
 #数据类型
 tf.float16,tf.float32,tf.float64,
@@ -336,16 +339,3 @@ print(FLAGS.data_dir)
 
 #tensor board
 tensorboard --logdir=/tmp/mnist_logs/train/ -port=2213
-
-
-
-#save and restore
-saver = tf.train.Saver()
-
-#save
-saver.save(sess, r'D:\newcode\model.ckpt')#一定要全路径
-#restore
-saver.restore(sess, r'D:\newcode\model.ckpt')
-
-
-
