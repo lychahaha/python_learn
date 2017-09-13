@@ -31,7 +31,7 @@ np.dstack(arrays)#np.concatenate(arrays, axis=2)
 np.row_stack(arrays)#np.vstack
 np.column_stack(arrays)#np.hstack
 np.stack(arrays, axis=0)#相当于新维度插入到axis
-np.split(a, n, axis=0)
+np.split(a, n, axis=0)#这个n可以是数组,表示[beg:n[0]]...[n[i]:n[i+1]]...[n[-1]:end]
 np.vsplit(a, n)#np.split(a, n, axis=0)
 np.hsplit(a, n)#np.split(a, n, axis=1)
 np.dsplit(a, n)#np.split(a, n, axis=2)
