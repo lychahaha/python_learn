@@ -35,6 +35,7 @@ np.split(a, n, axis=0)
 np.vsplit(a, n)#np.split(a, n, axis=0)
 np.hsplit(a, n)#np.split(a, n, axis=1)
 np.dsplit(a, n)#np.split(a, n, axis=2)
+np.array_split(a, n, axis=0)#n可以不整除维度的长度
 np.block(a)#类似分块矩阵的合并
 
 #读写
@@ -45,6 +46,11 @@ np.save(file, a)
 np.savez(file, **kw)#存多个数组
 np.savez_compressed(file, **kw)#带压缩
 #np.savetxt
+np.frombuffer(buf, dtype=np.float, count=-1, offset=0)
+np.fromfile(file, dtype=np.float, count=-1, sep='')
+np.fromfunction(func, shape)#func的参数是下标,返回值
+np.fromiter(iter, dtype, count=-1)
+np.fromstring(str, dtype=np.float, count=-1, sep='')
 
 #聚类型运算
 ##数值
@@ -58,6 +64,7 @@ np.prod(a)
 np.product(a)#np.prod
 np.percentile(a, q)#求百分数
 np.count_nonzero(a)
+np.bincount(a, weights=None)#计算元素出现次数,a必须是1维非负整数数组
 ##逻辑
 np.all(a)
 np.alltrue(a)#np.all
@@ -65,6 +72,7 @@ np.any(a)
 np.sometrue(a)#np.any
 np.array_equal(a, b)#完全相等
 np.array_equiv(a, b)#广播后相等
+np.allclose(a,b)#比较两个数组的元素是否某种程度上接近
 
 #生成
 ##数列型生成
@@ -101,6 +109,27 @@ np.ndenumerate(a)#迭代器,生成(全下标,值)
 np.put(a, ix, x)#a.flat[ix]=x
 np.putmask(a, mask, vals)#a.flat[i]=vals.flat[i] if mask.flat[i]
 np.take(a, ixs, axis=None)#axis为None时,按flat索引
+
+#map
+np.apply_along_axis(func, axis, a)#沿着某维度apply
+np.apply_over_axes(func, a, axes)#沿着多个维度apply
+
+#条件
+np.where(cond, [a,b])#true->a, false->b,如果没有[a,b],则返回np.nonzero(cond)
+np.choose(a, c)#[c[a[i]][i] for i in a.size]
+np.compress(conditions, a, axis=0)#根据条件在轴上进行过滤
+np.piecewise(a, masklist, funclist)#相当于实现多重if的map
+np.select(condlist, arraylist)#相当于多重if的map
+np.extract(condition, a)#condition的shape和a的要相同,符合条件的会选出来变成1维数组,相当于a[b]
+
+#创建
+np.array(l)
+np.asarray(a)
+np.asfarray(a)#强制转成浮点数
+np.asmatrix(a)
+np.mat(obj)
+np.matrix(obj)
+np.asscalar(a)
 
 #基础运算
 ##加减乘
@@ -151,7 +180,7 @@ np.arctan2(ay, ax)
 np.arctanh(a)
 
 #基础符号
-##基础
+##算术逻辑
 np.equal(a, b)#a==b
 np.not_equal(a, b)#a!=b
 np.greater(a, b)#a>b
@@ -162,16 +191,17 @@ np.left_shift(a, b)#a<<b
 np.right_shift(a, b)#a>>b
 np.positive(a)#+a
 np.negative(a)#-a
-##与或非
+##布尔逻辑
 np.logical_and(a, b)
 np.logical_not(a)
 np.logical_or(a, b)
 np.logical_xor(a, b)
-np.bitwise_and(a, b)#按位与,输入必须是int或bool
-np.bitwise_not(a)
-np.bitwise_or(a, b)
-np.bitwise_xor(a, b)
+np.bitwise_and(a, b)#a&b,按位与,输入必须是int或bool
+np.bitwise_not(a)#~a
+np.bitwise_or(a, b)#a|b
+np.bitwise_xor(a, b)#a^b
 np.invert(a)#np.bitwise_not
+np.in1d(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
 
 #最大与最小
 ##聚类
@@ -185,6 +215,14 @@ np.maximum(a, b)#优先返回np.nan
 np.minimum(a, b)
 np.fmax(a, b)#优先不返回np.nan
 np.fmin(a, b)
+
+#arg-
+#取结果的下标
+np.argmax(a)
+np.argmin(a)
+#np.argpartition
+np.argsort(a)
+np.argwhere(a)#返回true的全下标
 
 #nan-
 #不考虑np.nan或把它当成透明
@@ -202,13 +240,34 @@ np.nanstd(a)
 np.nansum(a)
 np.nanvar(a)
 
-#arg-
-#取结果的下标
-np.argmax(a)
-np.argmin(a)
-#np.argpartition
-np.argsort(a)
-np.argwhere(a)#返回true的全下标
+#is-
+np.isclose(a, b)#是否接近
+np.iscomplex(a)
+np.iscomplexobj(a)#至少有一个复数
+np.isreal(a)
+np.isrealobj(a)#是否完全没有复数
+np.isfinite(a)
+np.isfortran(a)
+np.isin(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
+np.isinf(a)
+np.isnan(a)
+np.isnat(a)#is not a time
+np.isneginf(a)
+np.isposinf(a)
+np.isscalar(a)
+np.issctype(a)#is scalar type
+np.iterable(a)#是否能遍历
+
+#取整
+np.around(a, decimals=0)#四舍五入,decimals决定对几位小数进行四舍五入,decimals可以为负
+np.floor(a)
+np.ceil(a)
+np.round(a, decimals=0)#np.around
+np.round_(a, decimals=0)#np.around
+np.rint(a)#返回离它最近的整数
+np.trunc(a)#去掉小数部分
+np.fix(a)#往0的方向取整
+np.modf(a)#返回(小数部分,整数部分)
 
 #绝对值与分段函数
 np.abs(a)#(复数的话求长度)
@@ -217,6 +276,14 @@ np.fabs(a)#强制转换为浮点数,不支持复数
 np.clip(a, min_, max_)#截断,相当于a<min_ -> min_, min_<=a<=max_ -> a, a>max_ -> max_
 np.sign(a)#a/|a|,相当于a<0 -> -1, a==0 -> 0, a>0 -> 1
 np.heaviside(a, b)#a<0 -> 0, a==0 -> b, a>0 -> 1
+np.copysign(a, b)#结合a的绝对值,b的正负号
+np.signbit(a)#是否小于0
+
+#集合运算
+np.setdiff1d(a, b)#list(set(a-b))
+np.setxor1d(a, b)#list(set(a^b))
+np.union1d(a, b)#list(set(a||b))
+np.intersect1d(a, b)#list(set(a&&b))
 
 #微积分
 np.diff(a, n=1)#n阶差分
@@ -243,27 +310,16 @@ np.dot(a, b)
 np.tensordot#很难的dot
 np.vdot(a, b)#np.sum(a.flat*b.flat)
 
-#取整
-np.around(a, decimals=0)#四舍五入,decimals决定对几位小数进行四舍五入,decimals可以为负
-np.floor(a)
-np.ceil(a)
-np.round(a, decimals=0)#np.around
-np.round_(a, decimals=0)#np.around
-np.rint(a)#返回离它最近的整数
-np.trunc(a)#去掉小数部分
-np.fix(a)#往0的方向取整
-np.modf(a)#返回(小数部分,整数部分)
+#内存
+np.copy(a)#深拷贝
+np.may_share_memory(a, b)#是否占用共同的内存(只检查边界是否有交集)
+np.shares_memory(a, b)#(检查是否有元素被共同)
+np.byte_bounds(a)#返回(beg,end),该数组占用内存的起终指针
 
 #前缀型计算
 np.cumsum(a)#前缀和
 np.cumprod(a)#前缀积
 np.cumproduct(a)#np.cumprod
-
-#集合运算
-np.setdiff1d(a, b)#list(set(a-b))
-np.setxor1d(a, b)#list(set(a^b))
-np.union1d(a, b)#list(set(a||b))
-np.intersect1d(a, b)#list(set(a&&b))
 
 #矩阵对角
 ##对角线
@@ -310,12 +366,44 @@ np.busday_count(date_beg, date_end, )#计算日期相差天数
 #np.busdaycalendar
 #np.is_busday
 
+#二进制
+np.packbits(a, axis=None)#二进制->uint8形式pack
+np.unpackbits(a, axis=None)#uint8->二进制形式unpack
+
+#类型转换
+np.can_cast(t1, t2)#判断是否能类型转换
+np.common_type(*arrays)#返回运算后会变成的类型
+np.maximum_sctype(obj)#返回这个数据可能的最高类型
+np.min_scalar_type(obj)#返回这个数据可能的最低类型
+np.obj2sctype(obj)#obj在np里的type
+np.promote_types(type1, type2)#返回两个type转换的最小精度type
+np.result_type(*array)#返回结果的类型
+
+#浮点值
+np.nextafter(a, b)#返回a向b方向的下一个浮点值
+np.nan_to_num(a)#把非数字改成极端数字
+np.real_if_close(a, tol=1000)#如果复数接近0,就返回实部,接近是指<tol*float_eps
+np.spacing(a)#返回比a大的最大浮点值减去a
+
+#金融
+np.fv(rate, nper, pmt, pv)#终值
+np.pv(rate, nper, pmt, fv=0)#现值
+np.npv(rate, values)#净现值
+np.pmt(rate, nper, pv, fv=0)#每期支付金额,(pmt=ppmt+ipmt)
+np.ppmt(rate, per, nper, pv, fv=0)#每期支付金额之本金
+np.ipmt(rate, per, nper, pv, fv=0)#每期支付金额之利息
+np.nper(rate, pmt, pv, fv=0)#定期付款期数
+np.rate(nper, pmt, pv, fv, guess=0.1, tol=1e-6, maxiter=100)#利率
+np.irr(values)#内部收益率
+np.mirr(values, finance_rate, reinvest_rate)#修正的内部收益率
+
 #常数
 np.e
 np.euler_gamma
 np.pi
 np.nan
 np.inf
+np.little_endian#true,小端格式
 
 #形状信息
 np.alen(a)#相当于shape[0]
@@ -429,23 +517,74 @@ np.ushort#np.uint16
 np.void
 np.void0#np.void0
 
+#模块
+np.char
+np.compat
+np.ctypeslib
+np.lib
+np.linalg
+np.ma
+np.math
+np.matrixlib
+np.polynomial
+np.random
+np.rec
+np.sys
+np.testing
+np.version
+np.warnings
 
-
-
-
-
-
-
-
-
-
-
-#属性
-a.ndim#维度
-a.shape#每个维度的长度(可写,元组形式)
+#数组属性
+a = np.array([1,2,3])
+##属性
 a.dtype#元素类型
-a.size#元素总个数,等于shape中元素之积
 a.itemsize#元素占字节数
+a.nbytes#总的占用字节数
+a.strides#(总元素个数,每个元素占字节数)
+a.flags#储存属性
+a.base#展平的a(同一块内存)
+a.flat#展平迭代器
+##函数
+a.astype(dtype)
+a.flatten()#展平的a(不同一块内存)
+a.byteswap(inplace=False)#每个元素内部bit进行reverse
+a.tobytes()#->btypes
+a.tostring()#a.tobytes
+a.tofile(file, sep='', format="%s")
+a.tolist()#->list
+a.dump(file)
+a.dumps(file)
+##
+a.ctypes
+a.data
+##same
+a.max,a.min,a.mean,a.all,a.any,a.prod,a.sum,a.std,a.var,a.ptp#聚类
+a.argmax,a.argmin,a.argpartition,a.argsort#arg-
+a.transpose,a.swapaxes,a.ravel#局部改变
+a.choose,a.compress#条件
+a.reshape,a.resize,a.squeeze#全局改变
+a.searchsorted,a.sort#二分与排序
+a.shape,a.size,a.ndim#形状信息
+a.fill,a.repeat#生成
+a.put,a.take#下标读写
+a.diagonal,a.trace#矩阵
+a.clip#绝对值
+a.copy#内存
+a.cumprod,a.cumsum#前缀
+a.imag,a.real,a.conj,a.conjugate#复数
+a.nonzero#下标
+a.dot#积
+a.round#取整
+##tmp
+a.getfield
+a.item
+a.itemset
+a.newbyteorder
+a.partition
+a.setfield
+a.setflags
+a.view
+
 
 #线性代数
 from numpy import linalg
@@ -499,22 +638,13 @@ b = random.permutation(a)#相当于shuffle
 #np.add_newdoc
 #np.add_newdoc_ufunc
 #np.add_newdocs
-np.allclose(a,b)#比较两个数组的元素是否某种程度上接近
-np.apply_along_axis(func, axis, a)#沿着某维度apply
-np.apply_over_axes(func, a, axes)#沿着多个维度apply
-np.array(l)
 #np.array2string
 #np.array_repr
-np.array_split(a, n, axis=0)#split,n可以不整除维度的长度
 #np.array_str
 #np.asanyarray
-np.asarray(a)
 #np.asarray_chkfinite
 #np.ascontiguousarray
-#np.asfarray
 #np.asfortranarray
-np.asmatrix(a)
-np.asscalar(a)
 #np.atleast_1d
 #np.atleast_2d
 #np.atleast_3d
@@ -522,61 +652,41 @@ np.asscalar(a)
 #np.base_repr
 #np.bench
 #np.binary_repr
-np.bincount(a, weights=None)#计算元素出现次数,a必须是1维非负整数数组
 #np.blackman
 #np.bmat
 #np.broadcast
 #np.broadcast_arrays
-np.byte_bounds(a)#返回(beg,end),该数组占用内存的起终指针
 #np.c_
-np.can_cast(t1, t2)#判断是否能类型转换
 #np.cast
-##np.char
 #np.character
 #np.chararray
-np.choose(a, c)#[c[a[i]][i] for i in a.size]
-np.common_type(*arrays)#返回运算后会变成的类型
 #np.compare_chararrays
-np.compat
-np.compress(conditions, a, axis=0)#根据条件对axis过滤
 np.convolve(a, b)#1维卷积
-np.copy(a)
-np.copysign(a, b)#结合a的绝对值,b的正负号
 #np.copyto
 #np.core
 #np.corrcoef#相似度
 #np.correlate
 #np.cov
 #np.cross
-##np.ctypeslib
 #np.datetime_as_string
 #np.datetime_data
 #np.deprecate
 #np.deprecate_with_doc
 #np.disp
-
 np.dtype
 #np.einsum
 #np.einsum_path
 #np.emath
 #np.errstate
-np.extract(condition, a)#condition的shape和a的要相同,符合条件的会选出来变成1维数组,相当于a[b]
 #np.fastCopyAndTranspose
-##np.fft(a)
+#np.fft(a)
 #np.find_common_type
 #np.flatiter
 #np.flexible
 #np.floating
 #np.format_parser
-np.frombuffer(buf, dtype=np.float, count=-1, offset=0)
-np.fromfile(file, dtype=np.float, count=-1, sep='')
-np.fromfunction(func, shape)#func的参数是下标,返回值
-np.fromiter(iter, dtype, count=-1)
 #np.frompyfunc
 #np.fromregex
-np.fromstring(str, dtype=np.float, count=-1, sep='')
-
-#np.fv
 #np.generic
 #np.genfromtxt
 #np.get_array_wrap
@@ -586,102 +696,52 @@ np.fromstring(str, dtype=np.float, count=-1, sep='')
 #np.geterr
 #np.geterrcall
 #np.geterrobj
-
 #np.hamming
 #np.hanning
 #np.histogram
 #np.histogram2d
 #np.histogramdd
 #np.i0
-np.in1d(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
 #np.index_exp
 #np.inexact
 np.infty
 #np.int_asbuffer
 #np.interp
-#np.ipmt
-#np.irr
-np.isclose(a, b)#是否接近
-np.iscomplex(a)
-np.iscomplexobj(a)#至少有一个复数
-np.isfinite(a)
-np.isfortran(a)
-np.isin(a, b, invert=False)#判断a中元素是否在b中,invert表示结果是否取反
-np.isinf(a)
-np.isnan(a)
-np.isnat(a)#is not a time
-np.isneginf(a)
-np.isposinf(a)
-np.isreal(a)
-np.isrealobj(a)#是否完全没有复数
-np.isscalar(a)
-np.issctype(a)#is scalar type
 #np.issubclass_
 #np.issubdtype
 #np.issubsctype
-np.iterable(a)#是否能遍历
 #np.ix_
 #np.kaiser
-##np.lib
-##np.linalg
-np.little_endian#true,小端格式
 #np.lookfor
-##np.ma
 #np.mafromtxt
 #np.mask_indices
-np.mat(obj)
-##np.math
-np.matrix(obj)
-##np.matrixlib
-np.maximum_sctype(obj)#返回这个数据可能的最高类型
-np.may_share_memory(a, b)#是否占用共同的内存
 #np.memmap
 #np.meshgrid
 #np.mgrid
-np.min_scalar_type(obj)#返回这个数据可能的最低类型
 #np.mintypecode
-#np.mirr
-np.nan_to_num(a)#把非数字改成极端数字
 np.nbytes#dict,记录类型所占字节数
 np.ndarray
 #np.ndfromtxt
 #np.nditer
 #np.nested_iters
 #np.newaxis
-np.nextafter(a, b)#返回a向b方向的下一个浮点值
-#np.nper
-#np.npv
 #np.numarray
 #np.number
-np.obj2sctype(obj)#obj在np里的type
 #np.ogrid
 #np.oldnumeric
-#np.packbits#按位拼
 #np.pad
 #np.partition
-np.piecewise(a, masklist, funclist)#相当于实现多重if的map
 #np.pkgload
 #np.place(a, mask, vals)
-#np.pmt
-##np.polynomial
-#np.ppmt
-np.promote_types(type1, type2)#返回两个type转换的最小精度type
-#np.pv
 #np.r_
-##np.random
-#np.rate
 #np.ravel_multi_index
-np.real_if_close(a, tol=1000)#如果复数接近0,就返回实部,接近是指<tol*float_eps
-##np.rec
 #np.require
-np.result_type(*array)#返回结果的类型
 #np.s_
 #np.safe_eval
 #np.sctype2char
 np.sctypeDict#dict, str->class
 #np.sctypeNA#dict, ?
 np.sctypes#dict, str->list_class(大类)
-np.select(condlist, arraylist)#相当于多重if的map
 #np.set_numeric_ops
 #np.set_printoptions
 #np.set_string_function
@@ -689,15 +749,10 @@ np.select(condlist, arraylist)#相当于多重if的map
 #np.seterr
 #np.seterrcall
 #np.seterrobj
-np.shares_memory(a, b)
 #np.show_config
-np.signbit(a)#是否小于0
 np.signedinteger
 #np.source
-np.spacing(a)#返回比a大的最大浮点值减去a
-##np.sys
 #np.test
-##np.testing
 np.timedelta64
 np.tracemalloc_domain#389047
 np.trim_zeros(a, trim='fb')#去掉前后的零,trim='fb'表示前后都去,'f'表示去掉前,'b'表示去掉后
@@ -707,10 +762,6 @@ np.typecodes#dict
 np.typename(ch)#type:ch->str
 np.ufunc
 #np.unique
-np.unpackbits(a, axis=None)#把uint8以二进制形式unpack
 np.unsignedinteger
 #np.unwrap
 #np.vectorize
-##np.version
-##np.warnings
-np.where(cond, [a,b])#true->a, false->b,如果没有[a,b],则返回np.nonzero(cond)
