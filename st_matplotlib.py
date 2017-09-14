@@ -182,7 +182,30 @@ zorder:?
 '''
 
 #hist
-plt.hist(data)
+#返回值是(cnts,intervals,Patches)
+#含义是每个区间的数目,区间的分界线(比区间数多1),每个区间的Patch对象
+#如果有多个数据,则第一个返回值是list(cnts),第三个返回值是list(Patches)
+plt.hist(data)#直方图,data是一维数组
+plt.hist([data1,data2])#画多个数据的直方图
+plt.hist(data, bins=50)#设置区间数
+plt.hist(data, bins=list)#设置区间的分界线
+#其他参数
+'''
+range:(xmin,xmax),设置区间边界(bins为区间分界线时无效)
+normed:bool,设置是否归一化(归一化后sum(区间cnt*区间长度)==1)
+weights:array,设置加权,shape要和x一样
+cumulative:bool,是否设置成data的前缀和的直方图
+bottom:ymin,设置y轴起点(如为array,则是每个bin单独设下限,shape要和x一样)
+histtype:'bar'(默认,柱状)|'barstacked'(多个数据会堆叠)|'step'(变成连续的线框)|'stepfilled(连续线框并填充)'
+align:'left'|'mid'|'right',是否稍稍偏左或偏右
+orientation:'horizontal'(水平放置)|'vertical'(默认)
+rwidth:float,(0,1],设置宽度的缩小比例,使柱子变细并且不连续,'step'或'stepfilled'时无效
+log:bool,设置y轴是否取log,取log会把cnt==0的柱子删除,返回值上也不会出现
+color:柱状图的颜色
+label:
+stacked:bool,是否堆叠,效果和'barstacked'一样,但histtype可以设置成'step'使得效果叠加
+'''
+#kw(Patch需要的参数)
 
 #axis
 #返回值是[xmin,xmax,ymin,ymax]
@@ -280,3 +303,22 @@ plt.sca(ax)#设置当前的子图
 plt.legend([line1,line2], ['one','two'])#设置图例
 #各种参数
 
+#annotate
+#返回值是Annotation对象
+plt.annotate('text', xy=(2,3), xytext=(4,6), arrowprops=dict(shrink=0.05))#画箭头
+#参数
+'''
+xy:(x,y),箭头尖尖的坐标
+xytext:(x,y),文字坐标(箭头底部坐标),不提供则把文字画在xy处,此时箭头会变成一个三角标
+arrowprops:dict,箭头属性,不提供则不画箭头
+{
+	width:箭头身体宽度
+	headwidth:箭头尖尖宽度
+	headlength:箭头尖尖长度
+	shrink:不画的比例,就是箭头实际底部与xytext的距离占xy到xytext的比例
+	?:还有
+}
+xycoords:?
+textcoords:?
+annotation_clip:bool,如果true,则xy在原本的区域里才会被画,默认None,当xycoords=='data'时认为是true
+'''
