@@ -282,6 +282,11 @@ polar:bool,是否使用极坐标,默认False
 projection:str,?
 '''
 
+#subplot2grid
+#返回值是AxesSubplot
+plt.subplot2grid((3,3), (0,0), colspan=2, rowspan=2)#多行多列的子图
+plt.subplot2grid((2,2), (0,0))#相当于plt.subplot(2,2,1)
+
 #grid
 plt.grid(True)#设置显示坐标网格
 #各种参数
@@ -298,6 +303,9 @@ plt.savefig(file)#保存figure
 #sca
 plt.sca(ax)#设置当前的子图
 
+#gca
+plt.gca()#获取当前的子图
+
 #legend
 #返回值是Legend对象
 plt.legend([line1,line2], ['one','two'])#设置图例
@@ -312,13 +320,50 @@ xy:(x,y),箭头尖尖的坐标
 xytext:(x,y),文字坐标(箭头底部坐标),不提供则把文字画在xy处,此时箭头会变成一个三角标
 arrowprops:dict,箭头属性,不提供则不画箭头
 {
-	width:箭头身体宽度
-	headwidth:箭头尖尖宽度
-	headlength:箭头尖尖长度
-	shrink:不画的比例,就是箭头实际底部与xytext的距离占xy到xytext的比例
-	?:还有
+    width:箭头身体宽度
+    headwidth:箭头尖尖宽度
+    headlength:箭头尖尖长度
+    shrink:不画的比例,就是箭头实际底部与xytext的距离占xy到xytext的比例
+    ?:还有
 }
 xycoords:?
 textcoords:?
 annotation_clip:bool,如果true,则xy在原本的区域里才会被画,默认None,当xycoords=='data'时认为是true
+'''
+
+#xscale,yscale
+plt.xscale('log')#改变坐标轴的量化
+plt.yscale('log')
+#scale(不同的scale可以使用不同的参数)
+'''
+'linear'(线性,默认)
+
+'log'(对数)
+{
+    basex,basey:?
+    nonposx,nonposy:'mask'|'clip',?
+    subsx,subsy:?
+}
+
+'logit'(对数0到1)
+{
+    nonpos:'mask'|'clip',?
+}
+
+'symlog'(有负的对数)
+{
+    basex,basey:?
+    linthreshx,linthreshy:?
+    subsx,subsy:?
+    linscalex,linscaley:?
+}
+'''
+
+#tight_layout
+plt.tight_layout()#调整子图的间距
+#参数
+'''
+pad:float,默认1.08,所有的间距?
+h_pad,w_pad:float,垂直和水平的子图间距
+rect:(left,bottom,right,top),?
 '''
