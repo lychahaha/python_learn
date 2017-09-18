@@ -198,7 +198,7 @@ tf.device("/gpu:0")
 
 #保存与载入
 saver = tf.train.Saver()
-saver = tf.train.Saver([a,b,c...])
+saver = tf.train.Saver([a,b,c])
 save_path = saver.save(sess, "/tmp/model.ckpt")
 save_path = saver.save(sess, "/tmp/model.ckpt", global_step=i)
 saver.restore(sess, "/tmp/model.ckpt")
