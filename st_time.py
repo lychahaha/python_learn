@@ -6,6 +6,9 @@ import datetime
 now = time.time()
 print now
 
+#睡眠
+time.sleep(0.5)#0.5s
+
 #时间戳转结构体时间
 print time.localtime(now)#当地时间
 print time.gmtime(now)#转标准时间(以now为localtime)
@@ -25,7 +28,6 @@ print time.strptime("2016 07 01 09:30:00", "%Y %m %d %H:%M:%S")
 
 #结构体时间转时间戳
 print time.mktime(now)
-
 
 #程序执行时间(运行态)
 t0 = time.clock()

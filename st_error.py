@@ -1,6 +1,12 @@
+import traceback
+import os,sys
+
 raise MyError('No files')
 
 assert a==1, 'a must be 1'
+
+exc_type, exc_value, exc_traceback = sys.exc_info()#第三个没用
+exc_traceback = traceback.format_exc()
 
 #成功:try
 #失败:try->except
