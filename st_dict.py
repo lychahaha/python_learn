@@ -1,5 +1,3 @@
-#coding=utf-8
-
 a = {'one':1, 'two':2}
 a = dict()
 a = dict(one=1, two=2)
@@ -15,7 +13,7 @@ a['one'] = 2
 a.update(dict1,dict2,...)#用参数字典里的键值对插入或替换,参数可以是键值对列表
 
 #判断键是否存在
-print a.has_key('one')
+'one' in a
 
 #遍历
 for key in a:
@@ -29,14 +27,9 @@ a.pop(key,default)#没找到这个键则返回默认值
 a.popitem()#随机删除并返回一个键值对,字典为空时抛出异常
 
 #dict->list
-#静态
-b = a.items()#键值对
-b = a.keys()#键
-b = a.values()#值
-#动态(类似数据库对象,字典改变后它们会改变)
-b = a.viewitems()#键值对
-b = a.viewkeys()#键
-b = a.viewvalues()#值
+b = list(a.items())#键值对
+b = list(a.keys())#键
+b = list(a.values())#值
 
 #dict->iter
 b = a.iteritems()#键值对
@@ -50,8 +43,7 @@ for val in a.itervalues():
 	print val
 
 #拷贝
-b = a.copy()#浅拷贝
-b = copy.deepcopy(a)#深拷贝
+b = a.copy()
 
 #清空
 a.clear()

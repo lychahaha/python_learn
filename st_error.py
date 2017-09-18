@@ -1,35 +1,3 @@
-#名字错误
-#名字未定义
-NameError
-
-#语法错误
-SyntaxError
-
-#IO错误
-IOError
-
-#除零错误
-ZeroDivisionError
-
-#值错误
-#强制类型转换时
-ValueError
-
-#断言错误
-#assert断言失败
-AssertionError
-
-#基础异常
-BaseException
-
-#异常
-Exception
-
-#键盘中断
-KeyboardInterrupt
-
-
-
 raise MyError('No files')
 
 assert a==1, 'a must be 1'
@@ -43,7 +11,7 @@ except:
 	
 try:
 	pass
-except NameError, e:
+except NameError as e:
 	print e
 
 #成功:try->else
@@ -87,5 +55,35 @@ def __enter__(self):
 	
 def __exit__(self, exc_type, exc_value, traceback):
 	pass
+
 		
+#名字错误
+#名字未定义
+NameError
+
+#语法错误
+SyntaxError
+
+#IO错误
+IOError
+
+#除零错误
+ZeroDivisionError
+
+#值错误
+#强制类型转换时
+ValueError
+
+#断言错误
+#assert断言失败
+AssertionError
+
+#基础异常
+BaseException
+
+#异常
+Exception
+
+#键盘中断
+KeyboardInterrupt
 				
