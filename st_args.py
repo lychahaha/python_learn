@@ -22,6 +22,7 @@ if __name__ == '__main__':
 	#python a.py -v xxx
 	#python a.py --verbosity=xxx
 	parser.add_argument("-v", "--verbosity", help="xxx")
+	parser.add_argument("--verbosity", help="xxx")
 
 	##定义01名字参数(选填)
 	#python a.py -v

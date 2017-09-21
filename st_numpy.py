@@ -117,7 +117,7 @@ np.apply_over_axes(func, a, axes)#沿着多个维度apply
 #条件
 np.where(cond, [a,b])#true->a, false->b,如果没有[a,b],则返回np.nonzero(cond)
 np.choose(a, c)#[c[a[i]][i] for i in a.size]
-np.compress(conditions, a, axis=0)#根据条件在轴上进行过滤
+np.compress(conditions, a, axis=None)#根据条件在轴上进行过滤
 np.piecewise(a, masklist, funclist)#相当于实现多重if的map
 np.select(condlist, arraylist)#相当于多重if的map
 np.extract(condition, a)#condition的shape和a的要相同,符合条件的会选出来变成1维数组,相当于a[b]
