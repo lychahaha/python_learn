@@ -1,6 +1,7 @@
 #coding=utf-8
 
 import os
+import shutil
 
 #os名字
 os.name
@@ -39,12 +40,12 @@ os.path.isdir(path)
 #判断是否是文件
 os.path.isfile(path)
 
-#文件大小 
+#文件大小
 os.path.getsize(path)
-#返回路径的目录 
+#返回路径的目录
 os.path.dirname(path)
-#返回路径的文件名 
-os.path.basename(path) 
+#返回路径的文件名
+os.path.basename(path)
 
 #创建目录
 os.mkdir(path)
@@ -55,5 +56,11 @@ os.rmdir(path)
 os.fork()
 #获取进程id
 os.getpid()
-#获取父进程id 
+#获取父进程id
 os.getppid()
+
+#复制粘贴
+shutil.copy(src_path, dst_path)
+#剪切粘贴
+shutil.move(src_path, dst_path)
+
