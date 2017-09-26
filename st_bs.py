@@ -1,12 +1,13 @@
 #coding=utf-8
-import urllib2
+import urllib
+import urllib.request
 from bs4 import BeautifulSoup
 
 url='http://www.baidu.com'
 
-response=urllib2.urlopen(url)
+response=urllib.request.urlopen(url)
 
-soup=BeautifulSoup(response.read(),'html.parser',from_encoding='utf-8')
+soup=BeautifulSoup(response.read(), 'html.parser')
 
-for node in soup.find_all('a'):
+for node in soup.findAll('a'):
 	print node.name,node['href'],node.get_text()
