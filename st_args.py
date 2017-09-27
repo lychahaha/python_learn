@@ -44,7 +44,8 @@ if __name__ == '__main__':
 	#获取参数
 	print(args.v)#没定义'--'名字时,才能使用
 	print(args.verbosity)
-	
+	#可选参数没有时,值为None
+
 	#参数类型
 	#默认str类型
 	#有定义类型的,按照定义的类型
