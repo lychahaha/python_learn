@@ -51,6 +51,7 @@ l = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='conv')
 ##tf.GraphKeys
 tf.GraphKeys.TRAINABLE_VARIABLES
 tf.GraphKeys.UPDATE_OPS
+tf.GraphKeys.SUMMARIES
 
 
 ##输入
@@ -63,6 +64,8 @@ c = tf.constant(-1, shape=[2,3,3]) #相当于fill
 ##变量
 c = tf.Variable([2,3,4])
 c = tf.get_variable('a', shape=[2,3], initializer=tf.constant_initializer(1))
+#张量
+c = tf.convert_to_tensor(val)
 
 
 #学习器
@@ -103,6 +106,21 @@ with tf.variable_scope('resnet'):
     v1 = tf.get_variable('v1', shape=[2,3,4], initializer=tf.random_normal_initializer())
 with tf.variable_scope('resnet', reuse=True):
     v1 = tf.get_variable('v1')
+
+
+#summary
+##设置summary(返回值都是string)
+c = tf.summary.scalar('name', a)
+c = tf.summary.scalar('name', a, collections=[tf.GraphKeys.SUMMARIES]) #指定summary_op放到哪些collections
+c = tf.summary.image('name', a, max_outputs=3)
+c = tf.summary.histogram('name', a)
+##op
+summary_op = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
+summary,... = sess.run([summary_op,...], feed_dict={...})
+##writer
+writer = tf.summary.FileWriter('/tmp/log')
+writer.add_summary(summary, global_step=i)
+writer.close()
 
 
 ##张量属性(值)
@@ -394,3 +412,24 @@ for grads_per_var in zip(*all_grads):
     avg_grad = tf.reduce_mean(grads_per_var, axis=0)
     avg_grads.append(avg_grad)
 train_op = opt.apply_gradients(zip(avg_grads, variables))
+
+
+#tf-record
+writer = tf.python_io.TFRecordWriter(save_path)
+
+context = tf.train.Features({
+    feature={
+        'video_id':tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value]))
+        'labels':tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+    }
+})
+feature_lists = tf.train.FeatureLists(feature_list={
+    'rgb':tf.train.FeatureList(feature=[tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value])) for value in values ])
+    'audio':tf.train.FeatureList(feature=[tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value])) for value in values ])
+})
+
+example = tf.train.SequenceExample(context=context, feature_lists=feature_lists)
+write.write(example.SerializeToString())
+
+writer.close()
+
