@@ -33,6 +33,10 @@ ops = conf.options("section1")
 #增加新section
 conf.add_section("new_section")
 
+#删除值
+conf.remove_option('section1', 'name')
+#删除section
+conf.remove_section('section1')
 
 #a.ini
 '''
