@@ -73,6 +73,10 @@ np.sometrue(a)#np.any
 np.array_equal(a, b)#完全相等
 np.array_equiv(a, b)#广播后相等
 np.allclose(a,b)#比较两个数组的元素是否某种程度上接近
+##直方图
+np.histogram(a, bins=10, range=None, weights=None, density=None)#bins决定分组界线,range决定边界,weights决定加权,density决定是否归一化
+#np.histogram2d
+#np.histogramdd
 
 #生成
 ##数列型生成
@@ -698,9 +702,6 @@ np.dtype
 #np.geterrobj
 #np.hamming
 #np.hanning
-#np.histogram
-#np.histogram2d
-#np.histogramdd
 #np.i0
 #np.index_exp
 #np.inexact
