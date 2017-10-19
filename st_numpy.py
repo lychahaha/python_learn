@@ -364,6 +364,19 @@ np.polyfit(x, y, deg)#多项式插值,返回多项式系数,deg是多项式的�
 np.polyval(p, x)#多项式求值
 np.roots(p)#返回多项式的根
 
+#输出
+##获取输出选项值
+np.get_printoptions()
+##设置输出选项值
+np.set_printoptions(precision=8) #浮点数小数位数为8
+np.set_printoptions(threshold=1000) #不省略打印的阈值
+np.set_printoptions(edgeitems=3) #省略打印时开头和结尾打印的个数
+np.set_printoptions(linewidth=75) #每行最大字符数
+np.set_printoptions(suppress=False) #是否禁止使用科学计数法打印小浮点数
+np.set_printoptions(nanstr='nan') #nan的输出
+np.set_printoptions(infstr='inf') #inf的输出
+np.set_printoptions(formatter={'float':float.__str__}) #设置浮点数输出格式
+
 #日期
 np.busday_count(date_beg, date_end, )#计算日期相差天数
 #np.busday_offset
