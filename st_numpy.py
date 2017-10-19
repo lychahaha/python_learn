@@ -708,7 +708,6 @@ np.dtype
 #np.genfromtxt
 #np.get_array_wrap
 #np.get_include
-#np.get_printoptions
 #np.getbufsize
 #np.geterr
 #np.geterrcall
@@ -757,7 +756,6 @@ np.sctypeDict#dict, str->class
 #np.sctypeNA#dict, ?
 np.sctypes#dict, str->list_class(大类)
 #np.set_numeric_ops
-#np.set_printoptions
 #np.set_string_function
 #np.setbufsize
 #np.seterr
