@@ -4,6 +4,7 @@ import numpy as np
 
 #keras.layers
 from tensorflow.contrib.keras.python.keras.layers import Conv2D,Dense,MaxPooling2D,ZeroPadding2D,Flatten,BatchNormalization,Dropout,AveragePooling2D,Activation
+from tensorflow.contrib.keras.python.keras.layers import Conv3D,MaxPooling3D,AveragePooling3D,ZeroPadding3D
 from tensorflow.contrib.keras.python.keras import layers
 ##conv
 ##变量放在TRAINABLE_VARIABLES
@@ -25,6 +26,14 @@ x = Activation('relu')(x)
 x = Flatten()(x)
 ##dropout
 x = Dropout(drop_rate)(x) #注意是drop的比例
+##补零
+x = ZeroPadding2D((3,3))(x) #两边都加3
+##3D
+x = Conv3D(32, (3,3,3), strides=(2,2,2), padding='same', name='conv1')(x)
+x = MaxPooling3D((2,2,2), strides=(2,2,2))(x)
+x = AveragePooling3D((2,2,2), strides=(2,2,2))(x)
+x = ZeroPadding3D((3,3,3))(x)
+
 
 #sess
 sess = tf.Session()
