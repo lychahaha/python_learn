@@ -1,3 +1,4 @@
+#jh:func-base
 import skimage
 import skimage.io
 import skimage.transform
@@ -5,7 +6,7 @@ import skimage.morphology
 from matplotlib import pyplot as plt
 
 #io.imread
-#返回值:np.array
+#返回值:np.array,uint8
 #shape:RGB(m,n,3),grey(m,n)
 skimage.io.imread('a.jpg')#读入图片
 skimage.io.imread('https://xxx.jpg')#网络图片
@@ -16,13 +17,17 @@ as_grey:bool,是否变成灰度图片(浮点表示)
 '''
 
 #io.imshow
+#输入是浮点,整数都行(还有自动根据范围调整)
 skimage.io.imshow(img)#显示图片(调用matplotlib接口)
 plt.show()
 
 #io.imsave
-skimage.io.imsave(r'a.jpg', img)
+#输入是浮点,整数都行
+skimage.io.imsave('a.jpg', img)
 
 #transform.resize
+#输入是浮点,整数都行
+#输出是浮点
 skimage.transform.resize(img, (224,224))
 #其他参数
 '''
