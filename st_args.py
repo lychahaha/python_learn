@@ -1,3 +1,4 @@
+#jh:proc-base-typical,key-type
 import argparse
 
 #typical
@@ -17,7 +18,7 @@ if __name__ == '__main__':
 	#定义定位参数(必填)
 	#python a.py myname
 	parser.add_argument("name", help='xxx')
-	
+
 	#定义名字参数(选填)
 	#python a.py -v xxx
 	#python a.py --verbosity=xxx

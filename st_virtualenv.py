@@ -1,3 +1,5 @@
+#jh:proc-base,lazy-type
+
 #创建env
 virtualenv myenv
 ##参数

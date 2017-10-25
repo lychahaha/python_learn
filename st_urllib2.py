@@ -1,3 +1,4 @@
+#jh:proc-base,lazy-type
 #coding=utf-8
 
 import urllib2

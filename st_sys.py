@@ -1,3 +1,4 @@
+#jh:func-base,lazy-type
 #coding=utf-8
 
 import sys

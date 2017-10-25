@@ -1,3 +1,4 @@
+#jh:proc-base-typical,key-type
 import cProfile
 import profile
 import pstats

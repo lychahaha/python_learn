@@ -1,3 +1,4 @@
+#jh:func-base,key-type
 import getpass
 
 #获取用户(操作系统的用户名)

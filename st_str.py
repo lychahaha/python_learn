@@ -1,3 +1,4 @@
+#jh:func-base-mixsimilar,full-type
 #coding=utf-8
 
 #format

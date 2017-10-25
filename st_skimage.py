@@ -1,8 +1,9 @@
-#jh:func-base
+#jh:func-base,lazy-type
 import skimage
 import skimage.io
 import skimage.transform
 import skimage.morphology
+import skimage.filters
 from matplotlib import pyplot as plt
 
 #io.imread
@@ -13,13 +14,13 @@ skimage.io.imread('https://xxx.jpg')#网络图片
 #其他参数
 '''
 as_grey:bool,是否变成灰度图片(浮点表示)
-
 '''
 
 #io.imshow
 #输入是浮点,整数都行(还有自动根据范围调整)
 skimage.io.imshow(img)#显示图片(调用matplotlib接口)
-plt.show()
+#io.show
+skimage.io.show()#本质是plt.show()
 
 #io.imsave
 #输入是浮点,整数都行

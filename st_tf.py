@@ -1,3 +1,4 @@
+#jh:mix-base,lazy-type
 import tensorflow as tf
 import numpy as np
 
@@ -251,10 +252,10 @@ batch_mean, batch_var = tf.nn.moments(x, axises, name='moments')
 
 
 ##变量作用域
-with tf.variable_scope('V1'):  
-	a1 = tf.get_variable(name='a1', shape=[1], initializer=tf.constant_initializer(1))  
+with tf.variable_scope('V1'):
+	a1 = tf.get_variable(name='a1', shape=[1], initializer=tf.constant_initializer(1))
 #重用
-with tf.variable_scope('V1', reuse=True):  
+with tf.variable_scope('V1', reuse=True):
 	a3 = tf.get_variable('a1')
 
 #?

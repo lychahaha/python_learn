@@ -1,3 +1,5 @@
+#jh:mix-base,lazy-type
+
 #a.py
 import ctypes
 
@@ -15,7 +17,7 @@ lib.solve()
 using namespace std;
 
 extern "C"{
-	
+
 void solve(){
 	printf("Hello,world!\n");
 }

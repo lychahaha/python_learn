@@ -1,4 +1,4 @@
-#jh:func-base
+#jh:func-base,key-type
 import warnings
 
 #警告

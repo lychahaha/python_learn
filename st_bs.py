@@ -1,4 +1,4 @@
-#coding=utf-8
+#jh:class-base,key-type
 import urllib
 import urllib.request
 from bs4 import BeautifulSoup

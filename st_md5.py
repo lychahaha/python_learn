@@ -1,3 +1,4 @@
+#jh:proc-base-onlyone,key-type
 #coding=utf-8
 import md5
 

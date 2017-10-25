@@ -1,3 +1,5 @@
+#jh:func-base-similar,key-type
+
 jupyter-notebook
 
 #jupyter --generate-config

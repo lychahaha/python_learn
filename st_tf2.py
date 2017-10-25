@@ -1,4 +1,4 @@
-#jh:mix-base
+#jh:mix-base,lazy-type
 import tensorflow as tf
 import numpy as np
 

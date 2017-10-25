@@ -1,3 +1,4 @@
+#jh:proc-base-onlyone,key-type
 #coding=utf-8
 import sqlite3
 
@@ -22,7 +23,7 @@ for row in cursor:
 
 rs = cursor.fetchone()
 rs = cursor.fetchmary(3)
-rs = cursor.fetchall()	
+rs = cursor.fetchall()
 
 cursor = conn.cursor()
 rs = cursor.execute('........')

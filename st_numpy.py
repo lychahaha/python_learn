@@ -1,3 +1,4 @@
+#jh:func-base-similar,full-type
 import numpy as np
 
 #全局改变

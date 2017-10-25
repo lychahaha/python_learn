@@ -1,3 +1,4 @@
+#jh:mix-base,lazy-type
 #coding=utf-8
 import logging
 

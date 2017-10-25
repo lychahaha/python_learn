@@ -1,3 +1,4 @@
+#jh:proc-base-typical,key-type
 import configparser
 
 #typical

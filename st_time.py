@@ -1,3 +1,4 @@
+#jh:func-base-mixsimilar,lazy-type
 #coding=utf-8
 import time
 import datetime

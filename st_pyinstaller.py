@@ -1,3 +1,5 @@
+#jh:func-base-mixsimilar,key-type
+
 #单文件
 pyinstaller -F a.py
 #单目录(多文件)(默认)

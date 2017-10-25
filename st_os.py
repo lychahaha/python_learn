@@ -1,3 +1,4 @@
+#jh:func-base-mixsimilar,key-type
 import os
 import shutil
 

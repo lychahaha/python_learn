@@ -1,3 +1,5 @@
+#jh:func-base-mixsimilar,key-type
+
 #coding=utf-8
 import random
 

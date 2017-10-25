@@ -1,3 +1,4 @@
+#jh:mix-base,lazy-type
 #coding=utf-8
 import json
 
@@ -43,8 +44,8 @@ class decoder(json.JSONDecoder):
 			args = dict((key.encode('ascii'), value) for key, value in d.items())
 			inst = class_(**args)
 		else:
-			inst = d	
-		return inst		
+			inst = d
+		return inst
 
 d = encoder().encode(obj)
-obj = decoder().decode(d)		
+obj = decoder().decode(d)

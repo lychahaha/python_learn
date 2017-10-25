@@ -1,3 +1,4 @@
+#jh:mix-base,lazy-type
 from flask import request,make_response,session
 from flask import render_template,url_for,redirect,abort
 from flask import Blueprint
@@ -49,7 +50,7 @@ def login():
 
 @app.errorhandler(404)
 def page_not_found():
-	return render_template('error.html'), 404	
+	return render_template('error.html'), 404
 
 
 #视图函数返回对象
@@ -76,7 +77,7 @@ response.set_cookie('username', 'myUser')
 #session
 if 'username' not in session:
 	session['username'] = 'myUser'
-session.pop('username', None)	
+session.pop('username', None)
 
 
 #message
@@ -106,4 +107,4 @@ admin = Blueprint('admin', __name__)
 @admin.route('/test')
 def test():
 	return 'test'
-app.register_blueprint(admin, url_prefix='/admin')	
+app.register_blueprint(admin, url_prefix='/admin')

@@ -1,3 +1,4 @@
+#jh:func-base-mixsimilar,key-type
 import pdb
 
 #停下来
@@ -15,7 +16,7 @@ l
 
 #断点(break)
 #查看所有断点
-b 
+b
 #在xx行设置断点
 b 233
 #在函数入口设置断点

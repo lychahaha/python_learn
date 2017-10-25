@@ -1,3 +1,4 @@
+#jh:func-base,key-type
 import os,sys
 
 #open(name[,mode[,buffer]])

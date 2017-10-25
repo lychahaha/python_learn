@@ -1,3 +1,5 @@
+#jh:func-base-mixsimilar,key-type
+
 a = {'one':1, 'two':2}
 a = dict()
 a = dict(one=1, two=2)

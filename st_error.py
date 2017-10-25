@@ -1,3 +1,4 @@
+#jh:mix-base,key-type
 import traceback
 import os,sys
 
@@ -14,14 +15,14 @@ try:
 	pass
 except:
 	pass
-	
+
 try:
 	pass
 except NameError as e:
 	print e
 
 #成功:try->else
-#失败:try->except	
+#失败:try->except
 try:
 	pass
 except:
@@ -30,7 +31,7 @@ else:
 	pass
 
 #成功:try->finally
-#失败:try->except->finally	
+#失败:try->except->finally
 try:
 	pass
 except:
@@ -39,7 +40,7 @@ finally:
 	pass
 
 #成功:try->else->finally
-#失败:try->except->finally	
+#失败:try->except->finally
 try:
 	pass
 except:
@@ -48,21 +49,21 @@ else:
 	pass
 finally:
 	pass
-	
-	
+
+
 with expression as val:
 	#__enter__()
 	pass
 	#__exit__()
-	
+
 def __enter__(self):
 	pass
 	return self#不一定是self
-	
+
 def __exit__(self, exc_type, exc_value, traceback):
 	pass
 
-		
+
 #名字错误
 #名字未定义
 NameError
@@ -92,4 +93,3 @@ Exception
 
 #键盘中断
 KeyboardInterrupt
-				

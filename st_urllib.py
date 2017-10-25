@@ -1,3 +1,4 @@
+#jh:mix-base,lazy-type
 import urllib.request
 
 url = 'http://www.baidu.com'

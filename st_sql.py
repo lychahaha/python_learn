@@ -1,3 +1,4 @@
+#jh:proc-base,key-type
 import MySQLdb
 
 connect = MySQLdb.connect(host='127.0.0.1', port=3306, user='root', passwd='520lwt', db='jspweb', charset='utf8')

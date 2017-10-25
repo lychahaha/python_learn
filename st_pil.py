@@ -1,3 +1,4 @@
+#jh:proc-base,lazy-type
 #coding=utf-8
 
 from PIL import Image,ImageFilter,ImageDraw,ImageFont

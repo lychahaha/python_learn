@@ -1,3 +1,4 @@
+#jh:class-base,lazy-type
 from splinter import Browser
 
 #创建浏览器

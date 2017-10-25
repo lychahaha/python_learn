@@ -1,3 +1,5 @@
+#jh:func-base,lazy-type
+
 #map(func, seq[,seq,...])
 #seq里每个元素作为参数传入func,返回值作为元素的新值
 map(func, seq)

@@ -1,3 +1,5 @@
+#jh:func-base,lazy-type
+
 import re
 
 pa = re.compile(r'imooc')

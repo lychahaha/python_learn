@@ -1,4 +1,4 @@
-#jh:func-base
+#jh:func-base,key-type
 from matplotlib import pyplot as plt
 import numpy as np
 

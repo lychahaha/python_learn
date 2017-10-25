@@ -1,3 +1,4 @@
+#jh:class-base,key-type
 #coding=utf-8
 import threading
 

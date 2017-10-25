@@ -1,3 +1,4 @@
+#jh:func-base,full-type
 #coding=utf-8
 
 class myClass(object):
@@ -34,7 +35,7 @@ class myClass(object):
 			stop = n.stop
 			pass
 		else:
-			pass	
+			pass
 
 	def __setitem__(self, n):
 		'''实现下标,索引,切片写操作'''
@@ -42,7 +43,7 @@ class myClass(object):
 
 	def __delitem__(self, n):
 		#?
-	
+
 	def __getattr__(self, attr):
 		'''
 			内建getattr方法
@@ -55,13 +56,13 @@ class myClass(object):
 		elif attr == 'get_score':
 			#类方法,返回函数
 			return lambda:100
-	
+
 	def __setattr__(self, attr, val):
 		'''实现类数据或类方法的写操作'''
 		pass
 
 	def __delattr__(self, attr):
-		#?	
+		#?
 
 	def __getattribute__(self, attr):
 		'''
@@ -80,18 +81,18 @@ class myClass(object):
 		pass
 	def delx(self):
 		pass
-	x = property(getx, setx, delx)	
+	x = property(getx, setx, delx)
 
 	@property
-	def name(self):	
+	def name(self):
 		return self.__name
 	@name.setter
 	def name(self, val):
 		self.__name = val
 	@name.deleter
 	def name(self):
-		del self.__name 	
-	
+		del self.__name
+
 	def __get__(self, attr):
 		'''获取对象本身'''
 		pass
@@ -99,7 +100,7 @@ class myClass(object):
 	def __set__(self, attr):
 		'''设置对象本身'''
 		pass
-	
+
 	def __delete__(self, attr):
 		'''删除对象本身'''
 		pass
@@ -110,7 +111,7 @@ class myClass(object):
 
 	def __new__(self, *args):
 		#?
-	
+
 	def __del__(self, * args):
 		#?
 
@@ -125,7 +126,7 @@ class myClass(object):
 	def __len__(self):
 		'''内建len方法'''
 		pass
-						
+
 	def __cmp__(self, obj):
 		'''内建cmp'''
 		pass
@@ -144,7 +145,7 @@ class myClass(object):
 
 	def __le__(self, obj):
 		'''小于等于操作符'''
-		pass	
+		pass
 
 	def __ge__(self, obj):
 		'''大于等于操作符'''
@@ -189,11 +190,11 @@ class myClass(object):
 	def __pow__(self, obj):
 		'''内建pow方法,幂操作符'''
 		pass
-		
+
 	def __lshift__(self, obj):
 		'''左移操作符'''
 		pass
-		
+
 	def __rshift__(self, obj):
 		'''右移操作符'''
 		pass
@@ -201,19 +202,19 @@ class myClass(object):
 	def __and__(self, obj):
 		'''与操作符'''
 		pass
-		
+
 	def __or__(self, obj):
 		'''或操作符'''
 		pass
-		
+
 	def __xor__(self, obj):
 		'''异或操作符'''
 		pass
-		
+
 	def __neg__(self):
 		'''一元负操作符'''
 		pass
-		
+
 	def __pos__(self):
 		'''一元正操作符'''
 		pass
@@ -221,38 +222,38 @@ class myClass(object):
 	def __abs__(self):
 		'''内建abs方法,绝对值'''
 		pass
-		
+
 	def __invert__(self):
 		'''取反操作符'''
-		pass	
+		pass
 
 	def __complex__(self, com):
 		'''内建complex方法,转为复数'''
-		pass	
+		pass
 
 	def __int__(self):
 		'''内建int方法,obj->int'''
 		pass
-		
+
 	def __long__(self):
 		'''内建long方法,obj->long'''
 		pass
-		
+
 	def __float__(self):
 		'''内建float方法,obj->float'''
-		pass	
+		pass
 
 	def __oct__(self):
 		'''内建oct方法,转八进制'''
 		pass
-		
+
 	def __hex__(self):
 		'''内建hex方法,转十六进制'''
 		pass
 
 	def __coerce__(self, num):
-		#?														
-		
+		#?
+
 
 #属性
 #模块
