@@ -1,3 +1,4 @@
+#jh:mix-base
 import tensorflow as tf
 import numpy as np
 
@@ -413,6 +414,7 @@ WHILE_CONTEXT
 
 
 #多GPU-avg_grad
+##变量定义一次,张量定义多次,梯度取均值
 variables = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
 all_grads = tf.get_collection('all_grads')
 avg_grads = []
@@ -421,6 +423,11 @@ for grads_per_var in zip(*all_grads):
     avg_grad = tf.reduce_mean(grads_per_var, axis=0)
     avg_grads.append(avg_grad)
 train_op = opt.apply_gradients(zip(avg_grads, variables))
+
+#keras-多gpu-网络定义
+##利用reuse,保证name一样
+with tf.variable_scope('resnet', reuse=(gpu_id!=0)):
+    x = Conv2D(20,(5,5),name='conv1')(x)
 
 
 #tf-record
