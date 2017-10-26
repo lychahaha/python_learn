@@ -4,9 +4,10 @@ import numpy as np
 
 
 #keras.layers
-from tensorflow.contrib.keras.python.keras.layers import Conv2D,Dense,MaxPooling2D,ZeroPadding2D,Flatten,BatchNormalization,Dropout,AveragePooling2D,Activation
-from tensorflow.contrib.keras.python.keras.layers import Conv3D,MaxPooling3D,AveragePooling3D,ZeroPadding3D
+from tensorflow.contrib.keras.python.keras.layers import Conv2D,Dense,MaxPool2D,ZeroPadding2D,Flatten,BatchNormalization,Dropout,AvgPool2D,Activation
+from tensorflow.contrib.keras.python.keras.layers import Conv3D,MaxPool3D,AvgPool3D,ZeroPadding3D
 from tensorflow.contrib.keras.python.keras import layers
+from tensorflow.contrib.keras import backend as K
 ##conv
 ##变量放在TRAINABLE_VARIABLES
 x = Conv2D(64, (3,3), strides=(1,1), padding='valid', name='conv1')(x) #w:'conv1/kernel', b:'conv1/bias'
@@ -15,8 +16,8 @@ x = Conv2D(32, (3,3), padding='same', activation='relu')(x)
 ##变量放在TRAINABLE_VARIABLES
 x = Dense(256, activation='relu', name='fc1')(x) #w:'fc1/kernel', b:'fc1/bias'
 ##pool
-x = MaxPooling2D((2,2), strides=(2,2))(x)
-x = AveragePooling2D((2,2), strides=(2,2))(x)
+x = MaxPool2D((2,2), strides=(2,2))(x)
+x = AvgPool2D((2,2), strides=(2,2))(x)
 ##batch normalization
 ##beta和gamma放在TRAINABLE_VARIABLES
 ##更新操作放在UPDATE_OPS
@@ -27,13 +28,29 @@ x = Activation('relu')(x)
 x = Flatten()(x)
 ##dropout
 x = Dropout(drop_rate)(x) #注意是drop的比例
+feed[K.learning_phase()] = int(is_train) #需要加上这
 ##补零
 x = ZeroPadding2D((3,3))(x) #两边都加3
 ##3D
 x = Conv3D(32, (3,3,3), strides=(2,2,2), padding='same', name='conv1')(x)
-x = MaxPooling3D((2,2,2), strides=(2,2,2))(x)
-x = AveragePooling3D((2,2,2), strides=(2,2,2))(x)
+x = MaxPool3D((2,2,2), strides=(2,2,2))(x)
+x = AvgPool3D((2,2,2), strides=(2,2,2))(x)
 x = ZeroPadding3D((3,3,3))(x)
+
+#tf.layers
+##fc
+w = tf.Variable(tf.zeros([784,10]))
+b = tf.Variable(tf.zeros([10]))
+x = tf.matmul(x,w) + b
+##conv
+w = tf.Variable(tf.zeros([3,3,1,16]))
+x = tf.nn.conv2d(x, w, strides=[1,1,1,1], padding='SAME')
+##pool
+x = tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
+##dropout
+x = tf.nn.dropout(x, keep_rate)
+##flatten
+x = tf.reshape(x, [-1,np.prod(x.get_shape()[1:]).value])
 
 
 #sess
@@ -240,10 +257,6 @@ x = tf.nn.tanh(x)
 x = tf.nn.sigmoid(x)
 ##loss
 x = tf.nn.l2_loss(x)
-##layer
-x = tf.nn.conv2d(x, w, strides=[1,1,1,1], padding='SAME')
-x = tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
-x = tf.nn.dropout(x, keep_rate)
 ##top-k
 x = tf.nn.in_top_k(logits, labels, k) #logits是二维的,labels是一维的
 ##onehot
