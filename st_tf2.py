@@ -84,15 +84,14 @@ tf.GraphKeys.SUMMARIES
 ##输入
 c = tf.placeholder(tf.float32)
 c = tf.placeholder(tf.float32, [None,224,224,1])
-##常量
+##常量(张量)
 c = tf.constant([1,2,3])
 c = tf.constant([1,2,3], dtype=tf.float32)
 c = tf.constant(-1, shape=[2,3,3]) #相当于fill
+c = tf.convert_to_tensor(val)
 ##变量
 c = tf.Variable([2,3,4])
-c = tf.get_variable('a', shape=[2,3], initializer=tf.constant_initializer(1))
-#张量
-c = tf.convert_to_tensor(val)
+c = tf.get_variable('a', shape=[2,3], initializer=tf.constant_initializer(np.zeros((2,3))))
 
 
 #学习器
@@ -105,25 +104,37 @@ train_op = opt.minimize(loss)
 grads = tf.gradients(loss, variables)
 train_op = opt.apply_gradients(zip(grad,variables))
 
+#初始化
+init_op = tf.global_variables_initializer()
+
 
 #初始化器
-init_op = tf.global_variables_initializer()
-tf.constant_initializer(1)
+##常数
+tf.constant_initializer([2,3,4])
 tf.zeros_initializer()
 tf.ones_initializer()
+##传统随机分布
 tf.random_uniform_initializer(minval=0, maxval=1)
 tf.random_normal_initializer(mean=0.0, stddev=1.0)
+##xavier
+tf.glorot_uniform_initializer()
+tf.glorot_normal_initializer()
+##截断
 tf.truncated_normal_initializer(mean=0.0, stddev=1.0)
+
 
 
 #保存与载入
 ##saver
-saver = tf.train.Saver()
-saver = tf.train.Saver([a,b,c]) #指定要保存的东西
+saver = tf.train.Saver() #默认所有变量
+saver = tf.train.Saver([a,b,c]) #指定要保存(载入)的变量
+saver = tf.train.Saver({'a':a,'b':b}) #指定(文件数据名字->载入变量),这样即使变量名变了也没关系
 ##save
 save_path = saver.save(sess, '/tmp/model.ckpt')
 save_path = saver.save(sess, '/tmp/model.ckpt', global_step=3)
 ##load
+##restore是根据saver初始化的变量列表,去文件寻找对应的数据
+##因此变量列表<=文件数据列表
 saver.restore(sess, '/tmp/model.ckpt')
 saver.restore(sess, '/tmp/model.ckpt-{}'.format(3))
 
@@ -150,13 +161,14 @@ writer.add_summary(summary, global_step=i)
 writer.close()
 
 
-##张量属性(值)
+##张量属性(值)和方法
 a.device
 a.dtype
 a.graph
 a.name
 a.op
 a.shape
+a.set_shape([2,3]) #能将none去掉?
 ##变量属性(值)和方法
 d.device
 d.dtype
@@ -174,6 +186,7 @@ t = tf.stack(l, axis=0) #创建新轴
 c = tf.concat([a,b,c], 2) #不创建新轴
 ##tensor->list
 l = tf.unstack(t, axis=0)
+l = tf.split(t, num_split, axis=0) #num_split必须整除axis的长度
 ##n个张量相加
 t = tf.add_n(l)
 
@@ -189,24 +202,57 @@ c = tf.expand_dims(a, axis=2)
 ##转置
 c = tf.transpose(a)
 c = tf.transpose(a, perm=[3,0,1,2])
+##翻转
+c = tf.reverse(a, [0,1]) #后面参数是要翻转的轴
 
 
-#赋值
+##赋值
 update_op = tf.assign(a, b) #a=b
 update_op = tf.assign_add(a, b) #a+=b
 update_op = tf.assign_sub(a, b) #a-=b
+##下标赋值
+update_op = tf.scatter_update(a, 0, b) #a[0]=b
+update_op = tf.scatter_update(a, [2,0,1], b) #a[v[i]]=b[i]
+update_op = tf.scatter_add(a, 0, b) #a[0]+=b
+update_op = tf.scatter_sub(a, 0, b) #a[0]-=b
 
 
 #下标
 c = a[4]
 c = a[2:4]
 c = a[2:5,4:12]
+##gather
+c = tf.gather(a, [0,2,3], axis=0) #在某个轴上取一些下标
 
-#随机
-##随机张量
+
+#生成(张量)
+##填充型
+c = tf.zeros([2,3,4], dtype=tf.float32)
+c = tf.zeros_like(a, dtype=None)
+c = tf.ones([2,3,4])
+c = tf.ones_like(a)
+c = tf.fill([2,3,4], 5)
+##数列型
+c = tf.range(n)
+c = tf.range(start, limit, delta=1)
+c = tf.linspace(start, stop, num) #等差数列,左闭右闭
+##随机型
 c = tf.random_uniform([32,32], minval=0.0, maxval=1.0)
 c = tf.random_normal([32,32], mean=-1, stddev=0.35)
 c = tf.truncated_normal([32,32]) #截尾的正态分布(截去2stddev以上)
+
+
+##平铺
+##每个维度一个数,表示重复次数
+##a.shape=[3,4,5],c.shape=[6,12,20](shape对应相乘)
+c = tf.tile(a, [2,3,4])
+##扩张
+##每个维度两个数,表示上下的扩张数
+##a.shape=[2,3,4],c.shape=[2+1+2,3+3+4,4+5+6]=[5,10,15]
+c = tf.pad(a, [[1,2],[3,4],[5,6]], constant_values=0)
+
+
+#随机
 ##随机种子
 tf.set_random_seed(seed)
 ##打乱
@@ -222,7 +268,6 @@ tf.device('/gpu:0')
 #func都是py函数
 b = tf.cond(fa, true_func, false_func)
 b = tf.cond(fa, lambda: tf.add(a,b), lambda: tf.add(a,-b))
-b = tf.cond(fa, true_func, false_func) #是否让
 
 
 #py-func
@@ -263,18 +308,6 @@ x = tf.nn.in_top_k(logits, labels, k) #logits是二维的,labels是一维的
 c = tf.one_hot(a, cla_nums)
 
 
-#生成
-##填充型
-c = tf.zeros([2,3,4], dtype=tf.float32)
-c = tf.zeros_like(a, dtype=None)
-c = tf.ones([2,3,4])
-c = tf.ones_like(a)
-c = tf.fill([2,3,4], 5)
-##数列型
-c = tf.range(n)
-c = tf.range(start, limit, delta=1)
-c = tf.linspace(start, stop, num) #等差数列,左闭右闭
-
 
 #矩阵
 ##矩阵乘法
@@ -313,7 +346,7 @@ c = tf.string_split(a, '/').values
 c = tf.string_join([a,b], '/')
 
 
-#属性
+#属性(张量)
 c = tf.shape(a)
 c = tf.size(a) #总元素个数,prod(shape)
 c = tf.rank(a) #len(shape)
