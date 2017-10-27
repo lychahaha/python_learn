@@ -57,9 +57,10 @@ x = tf.reshape(x, [-1,np.prod(x.get_shape()[1:]).value])
 sess = tf.Session()
 ##带config
 sess_config = tf.ConfigProto()
-sess_config.gpu_options.allow_growth = True #按需增长
-sess_config.allow_soft_placement=True #设备不合适时,自动寻找合适的设备
-sess_config.log_device_placement=True
+sess_config.gpu_options.allow_growth = True #显存按需增长
+sess_config.allow_soft_placement = True #设备不合适时,自动寻找合适的设备
+sess_config.log_device_placement = True
+sess_config.operation_timeout_in_ms = 5000 #设置timeout自动报错,查看卡死的地方
 sess = tf.Session(config=sess_config)
 ##可以支持eval的
 sess = tf.InteractiveSession()
@@ -67,6 +68,59 @@ sess = tf.InteractiveSession()
 ans = sess.run(obj, feed_dict={a1:b1,a2:b2})
 ##关闭
 sess.close()
+
+
+#tensor<->list(tensor)
+##list->tensor
+t = tf.stack(l, axis=0) #创建新轴
+c = tf.concat([a,b,c], 2) #不创建新轴
+##tensor->list
+l = tf.unstack(t, axis=0)
+l = tf.split(t, num_split, axis=0) #num_split必须整除axis的长度
+##n个张量相加
+t = tf.add_n(l)
+
+
+#改变形状
+##reshape
+c = tf.reshape(a, [2,3,4])
+##去掉长度为1的维度
+c = tf.squeeze(a) #去掉所以
+c = tf.squeeze(a, axis=[1,4]) #去掉指定的
+##插入长度为1的维度
+c = tf.expand_dims(a, axis=2)
+##转置
+c = tf.transpose(a)
+c = tf.transpose(a, perm=[3,0,1,2])
+##翻转
+c = tf.reverse(a, [0,1]) #后面参数是要翻转的轴
+#改变大小
+##平铺
+##每个维度一个数,表示重复次数
+##a.shape=[3,4,5],c.shape=[6,12,20](shape对应相乘)
+c = tf.tile(a, [2,3,4])
+##扩张
+##每个维度两个数,表示上下的扩张数
+##a.shape=[2,3,4],c.shape=[2+1+2,3+3+4,4+5+6]=[5,10,15]
+c = tf.pad(a, [[1,2],[3,4],[5,6]], constant_values=0)
+
+
+#复杂函数
+##激活函数
+x = tf.nn.softmax(x)
+x = tf.nn.relu(x)
+x = tf.nn.tanh(x)
+x = tf.nn.sigmoid(x)
+##loss
+x = tf.nn.l2_loss(x)
+##top-k
+x = tf.nn.in_top_k(logits, labels, k) #logits是二维的,labels是一维的
+##onehot
+c = tf.one_hot(a, cla_nums)
+##clip
+c = tf.clip_by_value(a, minval, maxval)
+c = tf.clip_by_norm(a, 1.0, axes=[2]) #限制第2条轴规约的L2范数小于等于1.0
+
 
 
 #收集
@@ -79,6 +133,43 @@ l = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='conv')
 tf.GraphKeys.TRAINABLE_VARIABLES
 tf.GraphKeys.UPDATE_OPS
 tf.GraphKeys.SUMMARIES
+
+
+#保存与载入
+##saver
+saver = tf.train.Saver() #默认所有变量
+saver = tf.train.Saver([a,b,c]) #指定要保存(载入)的变量
+saver = tf.train.Saver({'a':a,'b':b}) #指定(文件数据名字->载入变量),这样即使变量名变了也没关系
+##save
+save_path = saver.save(sess, '/tmp/model.ckpt')
+save_path = saver.save(sess, '/tmp/model.ckpt', global_step=3)
+##load
+##restore是根据saver初始化的变量列表,去文件寻找对应的数据
+##因此变量列表<=文件数据列表
+saver.restore(sess, '/tmp/model.ckpt')
+saver.restore(sess, '/tmp/model.ckpt-{}'.format(3))
+
+
+#共享变量
+with tf.variable_scope('resnet'):
+    v1 = tf.get_variable('v1', shape=[2,3,4], initializer=tf.random_normal_initializer())
+with tf.variable_scope('resnet', reuse=True):
+    v1 = tf.get_variable('v1')
+
+
+#summary
+##设置summary(返回值都是string)
+c = tf.summary.scalar('name', a)
+c = tf.summary.scalar('name', a, collections=[tf.GraphKeys.SUMMARIES]) #指定summary_op放到哪些collections
+c = tf.summary.image('name', a, max_outputs=3)
+c = tf.summary.histogram('name', a)
+##op
+summary_op = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
+summary,... = sess.run([summary_op,...], feed_dict={...})
+##writer
+writer = tf.summary.FileWriter('/tmp/log')
+writer.add_summary(summary, global_step=i)
+writer.close()
 
 
 ##输入
@@ -124,88 +215,6 @@ tf.truncated_normal_initializer(mean=0.0, stddev=1.0)
 
 
 
-#保存与载入
-##saver
-saver = tf.train.Saver() #默认所有变量
-saver = tf.train.Saver([a,b,c]) #指定要保存(载入)的变量
-saver = tf.train.Saver({'a':a,'b':b}) #指定(文件数据名字->载入变量),这样即使变量名变了也没关系
-##save
-save_path = saver.save(sess, '/tmp/model.ckpt')
-save_path = saver.save(sess, '/tmp/model.ckpt', global_step=3)
-##load
-##restore是根据saver初始化的变量列表,去文件寻找对应的数据
-##因此变量列表<=文件数据列表
-saver.restore(sess, '/tmp/model.ckpt')
-saver.restore(sess, '/tmp/model.ckpt-{}'.format(3))
-
-
-#共享变量
-with tf.variable_scope('resnet'):
-    v1 = tf.get_variable('v1', shape=[2,3,4], initializer=tf.random_normal_initializer())
-with tf.variable_scope('resnet', reuse=True):
-    v1 = tf.get_variable('v1')
-
-
-#summary
-##设置summary(返回值都是string)
-c = tf.summary.scalar('name', a)
-c = tf.summary.scalar('name', a, collections=[tf.GraphKeys.SUMMARIES]) #指定summary_op放到哪些collections
-c = tf.summary.image('name', a, max_outputs=3)
-c = tf.summary.histogram('name', a)
-##op
-summary_op = tf.summary.merge_all(key=tf.GraphKeys.SUMMARIES)
-summary,... = sess.run([summary_op,...], feed_dict={...})
-##writer
-writer = tf.summary.FileWriter('/tmp/log')
-writer.add_summary(summary, global_step=i)
-writer.close()
-
-
-##张量属性(值)和方法
-a.device
-a.dtype
-a.graph
-a.name
-a.op
-a.shape
-a.set_shape([2,3]) #能将none去掉?
-##变量属性(值)和方法
-d.device
-d.dtype
-d.graph
-d.initial_value #张量
-d.initializer #op
-d.name
-d.shape
-d.load(val, sess)
-
-
-#tensor<->list(tensor)
-##list->tensor
-t = tf.stack(l, axis=0) #创建新轴
-c = tf.concat([a,b,c], 2) #不创建新轴
-##tensor->list
-l = tf.unstack(t, axis=0)
-l = tf.split(t, num_split, axis=0) #num_split必须整除axis的长度
-##n个张量相加
-t = tf.add_n(l)
-
-
-#改变形状
-##reshape
-c = tf.reshape(a, [2,3,4])
-##去掉长度为1的维度
-c = tf.squeeze(a) #去掉所以
-c = tf.squeeze(a, axis=[1,4]) #去掉指定的
-##插入长度为1的维度
-c = tf.expand_dims(a, axis=2)
-##转置
-c = tf.transpose(a)
-c = tf.transpose(a, perm=[3,0,1,2])
-##翻转
-c = tf.reverse(a, [0,1]) #后面参数是要翻转的轴
-
-
 ##赋值
 update_op = tf.assign(a, b) #a=b
 update_op = tf.assign_add(a, b) #a+=b
@@ -241,15 +250,6 @@ c = tf.random_uniform([32,32], minval=0.0, maxval=1.0)
 c = tf.random_normal([32,32], mean=-1, stddev=0.35)
 c = tf.truncated_normal([32,32]) #截尾的正态分布(截去2stddev以上)
 
-
-##平铺
-##每个维度一个数,表示重复次数
-##a.shape=[3,4,5],c.shape=[6,12,20](shape对应相乘)
-c = tf.tile(a, [2,3,4])
-##扩张
-##每个维度两个数,表示上下的扩张数
-##a.shape=[2,3,4],c.shape=[2+1+2,3+3+4,4+5+6]=[5,10,15]
-c = tf.pad(a, [[1,2],[3,4],[5,6]], constant_values=0)
 
 
 #随机
@@ -292,20 +292,6 @@ c = tf.string_to_number(a)
 c = tf.string_to_number(a, out_type=tf.float32) #还能选float64和int32,int64
 ##num->str
 c = tf.as_string(a) #支持一般数字和bool
-
-
-#复杂函数
-##激活函数
-x = tf.nn.softmax(x)
-x = tf.nn.relu(x)
-x = tf.nn.tanh(x)
-x = tf.nn.sigmoid(x)
-##loss
-x = tf.nn.l2_loss(x)
-##top-k
-x = tf.nn.in_top_k(logits, labels, k) #logits是二维的,labels是一维的
-##onehot
-c = tf.one_hot(a, cla_nums)
 
 
 
@@ -402,6 +388,31 @@ c = tf.complex_abs(a) #|a|
 c = tf.conj(a) #返回a的共轭
 c = tf.real(a) #返回实部
 c = tf.imag(a) #返回虚部
+
+
+#类属性(值)和方法
+##张量
+a.device
+a.dtype
+a.graph
+a.name
+a.op
+a.shape
+a.set_shape([2,3]) #能将none去掉?
+##变量
+d.device
+d.dtype
+d.graph
+d.initial_value #张量
+d.initializer #op
+d.name
+d.shape
+d.load(val, sess)
+##张量shape
+shape.as_list() #变成list(int)形式
+shape.ndims #维度数
+shape[0].value #变成int形式
+
 
 
 #数据类型
