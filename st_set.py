@@ -17,11 +17,18 @@ b = a.difference(iter)#差集
 b = a.intersection(iter)#交集
 b = a.symmetric_difference(iter)#对称差集
 b = a.union(iter)#并集
-
+#运算符
+c = a - b #差集
+c = a & b #交集
+c = a | b #并集
+c = a ^ b #对称差集
+#原地更新
 a.difference_update(iter)#差集并更新
 a.intersection_update(iter)#交集并更新
 a.symmetric_difference_update(iter)#对称差集并更新
 a.update(iter)#并集并更新
+
+
 
 print a.isdisjoint(iter)#判断是否没有交集
 print a.issubset(iter)#判断是否是子集

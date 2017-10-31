@@ -120,7 +120,8 @@ c = tf.one_hot(a, cla_nums)
 ##clip
 c = tf.clip_by_value(a, minval, maxval)
 c = tf.clip_by_norm(a, 1.0, axes=[2]) #限制第2条轴规约的L2范数小于等于1.0
-
+##正则化
+c = tf.norm(a, ord=2, axis=None, keep_dims=False) #求p范数
 
 
 #收集
