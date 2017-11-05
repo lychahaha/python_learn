@@ -78,8 +78,8 @@ br.click_link_by_text('my link')
 br.click_link_by_partial_text('part of link text')
 br.click_link_by_id('link_id')
 ##链式查找
-divs = br.find_by_tag('div')
-div = divs.first.find_by_name('ddd')
+div = br.find_by_tag('div')[0]
+sub_div = div.find_by_name('ddd')
 ##操作
 ###鼠标操作
 ele.mouse_over() #移到该元素上方
@@ -93,3 +93,8 @@ ele.fill('xxx') #还有choose,select等表单操作
 ele.visible #是否可操作
 ele.tag_name
 ele.text
+
+
+#iframe(上下文)
+with br.get_iframe('iframe_id') as iframe:
+    div = br.find_by_id('xxx')

@@ -40,7 +40,7 @@ soup.find_all('div', attrs={'class':'bri','name':'tj_briicon'})
 soup.find_all(func) #func:tag->bool
 soup.find_all(['div','p'])
 soup.find_all(re.compile('^b'))
-
+div.find_all('a') #在div中搜索
 
 
 ##NavigableString

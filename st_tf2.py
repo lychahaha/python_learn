@@ -58,6 +58,7 @@ sess = tf.Session()
 ##带config
 sess_config = tf.ConfigProto()
 sess_config.gpu_options.allow_growth = True #显存按需增长
+sess_config.gpu_options.per_process_gpu_memory_fraction = 0.4 #设置占用比例
 sess_config.allow_soft_placement = True #设备不合适时,自动寻找合适的设备
 sess_config.log_device_placement = True
 sess_config.operation_timeout_in_ms = 5000 #设置timeout自动报错,查看卡死的地方
