@@ -45,6 +45,12 @@ multiprocessing.active_children()
 
 #下面的类都可以通过参数传递,进程间共享
 
+#伪共享内存的变量
+manager = multiprocessing.Manager()
+d = manager.dict({'1':1,'2':2})
+l = manager.list([2,3,3])
+
+
 #锁
 ##可以使用with lock上下文,代替acquire和release
 lock = multiprocessing.Lock()
