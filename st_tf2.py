@@ -32,7 +32,7 @@ feed[K.learning_phase()] = int(is_train) #需要加上这
 ##补零
 x = ZeroPadding2D((3,3))(x) #两边都加3
 ##3D
-x = Conv3D(32, (3,3,3), strides=(2,2,2), padding='same', name='conv1')(x)
+x = Conv3D(32, (3,3,3), strides=(2,2,2), padding='SAME', name='conv1')(x)
 x = MaxPool3D((2,2,2), strides=(2,2,2))(x)
 x = AvgPool3D((2,2,2), strides=(2,2,2))(x)
 x = ZeroPadding3D((3,3,3))(x)
@@ -51,6 +51,21 @@ x = tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 x = tf.nn.dropout(x, keep_rate)
 ##flatten
 x = tf.reshape(x, [-1,np.prod(x.get_shape()[1:]).value])
+##batch normalization
+shape = [x.get_shape()[3].value]
+beta = tf.get_variable('beta', shape=shape)
+gamma = tf.get_variable('gamma', shape=shape)
+mean,var = tf.nn.moments(x, [0,1,2]) #求均值和方差,axes表示对哪些轴取统计值
+eme = tf.train.ExponentialMovingAverage(decay)
+maintain_op = eme.apply([mean,var])
+tf.add_to_collection(tf.GraphKeys.UPDATE_OPS, maintain_op)
+moving_mean = eme.average(mean)
+moving_var = eme.average(var)
+cur_mean,cur_var = tf.cond(is_train, lambda: (mean,var), lambda: (moving_mean,moving_var))
+x = tf.nn.batch_normalization(x, mean=cur_mean, variance=cur_var, offset=beta, scale=gamma, variance_epsilon=1e-8)
+##deconv
+w = tf.Variable(tf.zeros([3,3,1,16]))
+x = tf.nn.conv2d_transpose(x, w, output_shape=[None,224,224,1], strides=[1,1,1,1], padding='SAME')
 
 
 #sess
@@ -86,7 +101,7 @@ t = tf.add_n(l)
 ##reshape
 c = tf.reshape(a, [2,3,4])
 ##去掉长度为1的维度
-c = tf.squeeze(a) #去掉所以
+c = tf.squeeze(a) #去掉所有
 c = tf.squeeze(a, axis=[1,4]) #去掉指定的
 ##插入长度为1的维度
 c = tf.expand_dims(a, axis=2)
@@ -110,10 +125,19 @@ c = tf.pad(a, [[1,2],[3,4],[5,6]], constant_values=0)
 ##激活函数
 x = tf.nn.softmax(x)
 x = tf.nn.relu(x)
+x = tf.nn.crelu(x) #[relu(x),relu(-x)],最后的维度会加倍
+x = tf.nn.relu6(x) #clip(x, 0, 6)
 x = tf.nn.tanh(x)
 x = tf.nn.sigmoid(x)
+x = tf.nn.elu(x) #e^x-1或x,分界线是x=0
+x = tf.nn.softplus(x) #log(exp(x)+1)
+x = tf.nn.softsign(x) #x/(|x|+1)
+x = tf.nn.bias_add(x, bias) #x+bias,没啥用
 ##loss
-x = tf.nn.l2_loss(x)
+loss = tf.nn.l2_loss(x)
+x = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels) #先softmax,再求交叉熵,返回一个向量(每条记录产生的交叉熵)
+x = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels) #label是没有onehot的
+x = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels) #softmax换成sigmoid
 ##top-k
 x = tf.nn.in_top_k(logits, labels, k) #logits是二维的,labels是一维的
 ##onehot
@@ -132,9 +156,10 @@ tf.add_to_collection('loss', a)
 l = tf.get_collection('loss')
 l = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='conv')
 ##tf.GraphKeys
-tf.GraphKeys.TRAINABLE_VARIABLES
-tf.GraphKeys.UPDATE_OPS
-tf.GraphKeys.SUMMARIES
+tf.GraphKeys.VARIABLES #tf的变量会自动放到这里
+tf.GraphKeys.TRAINABLE_VARIABLES #tf的可训练变量会自动放到这里
+tf.GraphKeys.UPDATE_OPS #keras的bn会将滑动平均更新op放在这里
+tf.GraphKeys.SUMMARIES #tf的summary会自动放到这里
 
 
 #保存与载入
@@ -152,7 +177,11 @@ saver.restore(sess, '/tmp/model.ckpt')
 saver.restore(sess, '/tmp/model.ckpt-{}'.format(3))
 
 
-#共享变量
+#scope
+##variable_scope
+with tf.variable_scope('resnet'):
+    v1 = tf.get_variable('v1', shape=[2,3,4]) #v1.name='resnet/v1',实际会有':0'后缀,可以不管
+##共享变量
 with tf.variable_scope('resnet'):
     v1 = tf.get_variable('v1', shape=[2,3,4], initializer=tf.random_normal_initializer())
 with tf.variable_scope('resnet', reuse=True):
@@ -171,7 +200,10 @@ summary,... = sess.run([summary_op,...], feed_dict={...})
 ##writer
 writer = tf.summary.FileWriter('/tmp/log')
 writer.add_summary(summary, global_step=i)
+writer.flush()
 writer.close()
+##tensor board
+tensorboard --logdir=/tmp/mnist_logs/train/ -port=2213
 
 
 ##输入
@@ -191,6 +223,12 @@ c = tf.get_variable('a', shape=[2,3], initializer=tf.constant_initializer(np.zer
 ##种类
 opt = tf.train.AdamOptimizer(learn_rate)
 opt = tf.train.GradientDescentOptimizer(learn_rate)
+opt = tf.train.AdagradOptimizer(learn_rate)
+opt = tf.train.AdadeltaOptimizer(learn_rate)
+opt = tf.train.RMSPropOptimizer(learn_rate)
+opt = tf.train.MomentumOptimizer(learn_rate)
+opt = tf.train.FtrlOptimizer(learn_rate)
+opt = tf.train.AdagradDAOptimizer(learn_rate)
 ##直接
 train_op = opt.minimize(loss)
 ##分离求梯度
@@ -199,6 +237,7 @@ train_op = opt.apply_gradients(zip(grad,variables))
 
 #初始化
 init_op = tf.global_variables_initializer()
+init_op = tf.local_variables_initializer()
 
 
 #初始化器
@@ -234,6 +273,8 @@ c = a[2:4]
 c = a[2:5,4:12]
 ##gather
 c = tf.gather(a, [0,2,3], axis=0) #在某个轴上取一些下标
+##slice
+c = tf.slice(a, beg, size) #a[2:5,4:12]就是tf.slice(a,[2,4],[3,8])
 
 
 #生成(张量)
@@ -261,16 +302,27 @@ tf.set_random_seed(seed)
 c = tf.random_shuffle(a) #只随机打乱最高维
 
 
-#设备
+#上下文
+##session
+tf.get_default_session()
+sess.as_default()
+##graph
+tf.get_default_graph()
+g.as_default()
+##设置使用哪些设备
 tf.device('/cpu:0')
 tf.device('/gpu:0')
 
 
-#条件
-#func都是py函数
+#控制流
+##cond(if-else)
+##func都是py函数
 b = tf.cond(fa, true_func, false_func)
 b = tf.cond(fa, lambda: tf.add(a,b), lambda: tf.add(a,-b))
-
+##case(switch)
+b = tf.case([(fa,fxa),(fb,fxb)], fx_default)
+##while_loop(while)
+tf.while_loop(fa, body_func, loop_vars) #body_func要求参数和返回值都是loop_vars
 
 #py-func
 c = tf.py_func(func, [a,b,c], tf.int32)
@@ -281,9 +333,13 @@ c = tf.argmax(a, axis=0)
 c = tf.argmax(a, output_type=tf.int64) #可以改成tf.int32
 c = tf.argmin(a)
 
-
-#no_op
+#特殊op
+##no_op
 train_op = tf.no_op()
+##group
+group_op = tf.group([op1,op2])
+##identity
+x2 = tf.identity(x) #类似深拷贝
 
 
 #类型转换
@@ -338,6 +394,35 @@ c = tf.string_join([a,b], '/')
 c = tf.shape(a)
 c = tf.size(a) #总元素个数,prod(shape)
 c = tf.rank(a) #len(shape)
+
+
+#队列
+q = tf.FIFOQueue(capacity=100, dtypes=[tf.string,tf.int32], shapes=[[],[2,3]])
+enq_op = q.enqueue([x1,x2])
+enq_op = q.enqueue_many([x1s,x2s]) #x1s.shape=[None],x2s.shape=[None,2,3]
+deq_op = q.dequeue()
+q.is_closed()
+q.size()
+
+
+#batch
+##batch
+images,labels = tf.train.batch(
+    [img,label],
+    batch_size=64,
+    capacity=2000,
+    num_threads=4,
+    allow_smaller_final_batch=True #假如前面设了epoch,这里不设,又不整除,最后会报异常
+)
+##shuffle_batch
+images,labels = tf.train.shuffle_batch(
+    [img,label],
+    batch_size=64,
+    capacity=2000,
+    min_after_dequeue=500, #队列里最小的长度,用来保证shuffle
+    num_threads=4,
+    allow_smaller_final_batch=True
+)
 
 
 #数学函数
@@ -471,6 +556,21 @@ TABLE_INITIALIZERS
 WHILE_CONTEXT
 
 
+#设置哪些gpu对tf可见
+os.environ['CUDA_VISIBLE_DEVICES'] = '0,1' #gpu0和gpu1可见
+
+
+#改变梯度
+@tf.RegisterGradient("QuantizeGrad")
+def sign_grad(op, grad):
+    return tf.clip_by_value(tf.identity(grad), -1, 1)
+
+def binary(input):
+    x = input
+    with tf.get_default_graph().gradient_override_map({"Sign":'QuantizeGrad'}):
+        x = tf.sign(x)
+    return x
+
 
 #多GPU-avg_grad
 ##变量定义一次,张量定义多次,梯度取均值
@@ -489,22 +589,86 @@ with tf.variable_scope('resnet', reuse=(gpu_id!=0)):
     x = Conv2D(20,(5,5),name='conv1')(x)
 
 
+#tf定义命令行参数
+flags = tf.flags
+flags.DEFINE_string("name", "default_val", "help")
+flags.DEFINE_bool("name", "default_val", "help")
+flags.DEFINE_float("name", "default_val", "help")
+flags.DEFINE_integer("name", "default_val", "help")
+
+FLAGS = flags.FLAGS
+
+def main(_):
+    print(FLAGS.name)
+
+if __name__ == '__main__':
+    tf.app.run()
+
+
+#滑动平均
+ema = tf.train.ExponentialMovingAverage(decay)
+maintain_op = eme.apply([v1,v2]) #自动创建对应的滑动平均变量
+...
+sess.run(maintain_op) #moving_v1 = decay * moving_v1 + (1-decay) * v1
+sess.run(eme.average(v1)) #moving_v1
+#指数衰减
+lr = tf.train.exponential_decay(init_lr, global_step, decay_steps, decay_rate, staircase=False)
+##lr = init_lr * decay_rate^(global_step/decay_steps)
+##如果staircase是true,那么global_step/decay_steps是整数除法,实现阶梯指数衰减
+
+
 #tf-record
+def _int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+def _bytes_feature(value):
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
+def _float_feature(value):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
+##write
 writer = tf.python_io.TFRecordWriter(save_path)
 
-context = tf.train.Features({
-    feature={
-        'video_id':tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value]))
-        'labels':tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
-    }
-})
-feature_lists = tf.train.FeatureLists(feature_list={
-    'rgb':tf.train.FeatureList(feature=[tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value])) for value in values ])
-    'audio':tf.train.FeatureList(feature=[tf.train.Feature(btypes_list=tf.train.BtypesList(value=[value])) for value in values ])
-})
-
-example = tf.train.SequenceExample(context=context, feature_lists=feature_lists)
-write.write(example.SerializeToString())
+example = tf.train.Example(features=tf.train.Features(feature={
+    'img':_bytes_feature(img.tostring()),
+    'label':_int64_feature(label)
+}))
+writer.write(example.SerializeToString())
 
 writer.close()
 
+##read
+file_queue = tf.train.string_input_producer(['a.rcd','b.rcd'], num_epochs=10) #这实际是一个队列
+reader = tf.TFRecordReader()
+_, serialized_example = reader.read(file_queue)
+features = tf.parse_single_example(serialized_example, features={
+    'img':tf.FixedLenFeature([], tf.string),
+    'label':tf.FixedLenFeature([], tf.int64)
+})
+img = features['img']
+img = tf.decode_raw(img, tf.uint8) #img前面tostring了
+img = tf.reshape(img, [224,224,3]) #img在tostring的时候丢失了shape信息
+label = features['label']
+images,labels = tf.train.batch(
+    [img,label],
+    batch_size=64,
+    capacity=3000,
+    num_threads=4
+)
+
+##run
+sess.run(tf.local_variables_initializer()) #设了epoch,就一定要有这句
+coord = tf.train.Coordinator()
+threads = tf.train.start_queue_runners(coord=coord,sess=sess)
+##读完之后,会抛出异常
+coord.request_stop()
+coord.join(threads)
+
+
+
+
+'''
+tf.nn.embedding_look
+tf.nn.nce_loss
+rnn
+tf.tuple
+'''
