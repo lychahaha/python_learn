@@ -616,6 +616,7 @@ x = linalg.matrix_rank(a)#秩
 q,r = linalg.qr(a)#QR分解
 u,s,v = linalg.svd(a)#SVD分解
 
+x = linalg.norm(x, ord=None, axis=1)#正则化,ord决定如何正则化,默认l2范数
 
 #随机
 from numpy import random

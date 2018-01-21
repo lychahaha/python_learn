@@ -1,34 +1,79 @@
-#jh:func-base-mixsimilar,lazy-type
-#coding=utf-8
+#jh:class-base,key-type
 import time
 import datetime
 
-#获取时间戳(浮点数)
-now = time.time()
-print now
+#时间戳(浮点数)
+timestamp = time.time()
+##时间元组->时间戳
+timestamp = time.mktime(tt)
+
+#时间元组(time.struct_time,继承元组)
+tt = time.localtime()
+tt = time.gmtime() #标准时间
+##属性
+tt.tm_year
+tt.tm_mon
+tt.tm_mday
+tt.tm_yday #一年的第几天
+tt.tm_wday #星期几
+tt.tm_hour
+tt.tm_min
+tt.tm_sec
+##时间戳->时间元组
+tt = time.localtime(timestamp)
+tt = time.gmtime(timestamp) #以timestamp为localtime
+##时间字符串->时间元组
+tt = time.strptime(s, '%Y-%m-%d %H:%M:%S')
+
+#时间字符串
+s = time.asctime()
+##时间戳->时间字符串
+s = time.ctime(timestamp) #'Sun Jan 21 16:59:32 2018'
+##时间元组->时间字符串
+s = time.asctime(tt) #格式同time.ctime
+##时间元组->时间字符串(带格式)
+s = time.strftime('%Y-%m-%d %H:%M:%S', tt)
+'''
+%Y:year
+%m:month
+%d:day
+%H:hour
+%M:minute
+%S:second
+%z:相对标准时间的偏移量
+%a/%A:星期英文缩写/不缩写
+%b/%B:月份缩写/不缩写
+%c:time.asctime的形式
+%I:12小时制的小时
+%p:AM/PM
+'''
+##datetime->时间字符串
+s = datetime.datetime.strftime('%Y-%m-%d %H:%M:%S', dt)
+
+#datetime.datetime
+dt = datetime.datetime.now()
+##属性
+dt.year
+dt.month
+dt.day
+dt.hour
+dt.minute
+dt.second
+dt.microsecond
+##方法
+dt.isocalendar() #返回(year,这年的第几周,星期几)
+dt.isoweekday() #星期几
+##时间字符串->datetime
+dt = datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+##日期加减
+dt2 = dt + datetime.timedelta(days=1, seconds=-10, microseconds=1000)
 
 #睡眠
 time.sleep(0.5)#0.5s
 
-#时间戳转结构体时间
-print time.localtime(now)#当地时间
-print time.gmtime(now)#转标准时间(以now为localtime)
+#程序执行时间(float)
+t = time.clock()
 
-now = time.localtime(now)
+#相对标准时间的偏移秒数(int)
+time.altzone
 
-#时间转字符串
-print time.asctime(now)
-print time.strftime("%y %m %d %H:%M:%S", now)#两位数年份
-print time.strftime("%Y", now)#四位数年份
-print time.strftime("%I %p", now)#12小时制的小时,PM or AM
-print time.strftime("%a %b %d", now)#星期(英文),月份(英文),日期(数字)
-print time.strftime("%c", now)#标准日期时间输出
-
-#字符串转时间
-print time.strptime("2016 07 01 09:30:00", "%Y %m %d %H:%M:%S")
-
-#结构体时间转时间戳
-print time.mktime(now)
-
-#程序执行时间(运行态)
-t0 = time.clock()
