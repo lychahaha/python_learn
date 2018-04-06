@@ -69,3 +69,15 @@ f.closed#是否关闭
 sys.stdin#标准输入
 sys.stdout#标准输出
 sys.stderr#标准错误
+
+
+import glob
+#查找符合规则的文件名
+glob.glob('D:/code/*.py') #list of str
+'''
+*:匹配0或多个字符
+**:匹配文件,目录
+?:匹配1个字符
+[1-9]:匹配指定范围内的字符
+[!1-9]:匹配不在范围内的字符
+'''

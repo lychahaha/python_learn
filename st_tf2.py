@@ -154,7 +154,7 @@ c = tf.norm(a, ord=2, axis=None, keep_dims=False) #求p范数
 tf.add_to_collection('loss', a)
 ##get
 l = tf.get_collection('loss')
-l = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='conv')
+l = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='conv') #筛选出名字带scope前缀
 ##tf.GraphKeys
 tf.GraphKeys.VARIABLES #tf的变量会自动放到这里
 tf.GraphKeys.TRAINABLE_VARIABLES #tf的可训练变量会自动放到这里
@@ -175,7 +175,9 @@ save_path = saver.save(sess, '/tmp/model.ckpt', global_step=3)
 ##因此变量列表<=文件数据列表
 saver.restore(sess, '/tmp/model.ckpt')
 saver.restore(sess, '/tmp/model.ckpt-{}'.format(3))
-
+##直接load文件
+var_list = tf.contrib.framework.list_variables('/tmp/model.ckpt') #list of (name,shape)
+var = tf.contrib.framework.load_variable('/tmp/model.ckpt', 'var_name')
 
 #scope
 ##variable_scope
