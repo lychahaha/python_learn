@@ -9,7 +9,6 @@ c.most_common(k)
 ##再添加一个列表参与计数
 c.update(l)
 
-
 #双端队列(可以当成列表用)
 d = deque()
 d = deque(l)
@@ -21,5 +20,6 @@ x = d.popleft()
 d.extend(l)
 d.extendleft(l)
 
-
-
+#带默认参数的字典
+d = defaultdict(list) #值是一个列表
+d = defaultdict(int) #值默认是0

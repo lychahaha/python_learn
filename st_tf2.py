@@ -4,9 +4,9 @@ import numpy as np
 
 
 #keras.layers
-from tensorflow.contrib.keras.python.keras.layers import Conv2D,Dense,MaxPool2D,ZeroPadding2D,Flatten,BatchNormalization,Dropout,AvgPool2D,Activation
-from tensorflow.contrib.keras.python.keras.layers import Conv3D,MaxPool3D,AvgPool3D,ZeroPadding3D
-from tensorflow.contrib.keras.python.keras import layers
+from tensorflow.contrib.keras.api.keras.layers import Conv2D,Dense,MaxPool2D,ZeroPadding2D,Flatten,BatchNormalization,Dropout,AvgPool2D,Activation
+from tensorflow.contrib.keras.api.keras.layers import Conv3D,MaxPool3D,AvgPool3D,ZeroPadding3D
+from tensorflow.contrib.keras.api.keras import layers
 from tensorflow.contrib.keras import backend as K
 ##conv
 ##变量放在TRAINABLE_VARIABLES
@@ -146,7 +146,7 @@ c = tf.one_hot(a, cla_nums)
 c = tf.clip_by_value(a, minval, maxval)
 c = tf.clip_by_norm(a, 1.0, axes=[2]) #限制第2条轴规约的L2范数小于等于1.0
 ##正则化
-c = tf.norm(a, ord=2, axis=None, keep_dims=False) #求p范数
+c = tf.norm(a, ord=2, axis=None, keepdims=False) #求p范数
 
 
 #收集
@@ -160,6 +160,10 @@ tf.GraphKeys.VARIABLES #tf的变量会自动放到这里
 tf.GraphKeys.TRAINABLE_VARIABLES #tf的可训练变量会自动放到这里
 tf.GraphKeys.UPDATE_OPS #keras的bn会将滑动平均更新op放在这里
 tf.GraphKeys.SUMMARIES #tf的summary会自动放到这里
+
+
+#条件
+c = tf.where(cond, a, b) #cond是布尔张量,cond,a,b的shape一样,如果cond[x]为true,就选a[x],否则选b[x]
 
 
 #保存与载入
@@ -425,6 +429,9 @@ images,labels = tf.train.shuffle_batch(
     num_threads=4,
     allow_smaller_final_batch=True
 )
+
+#op
+op.inputs[i]#op的第i个输入
 
 
 #数学函数

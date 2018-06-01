@@ -392,7 +392,7 @@ class MyNet(nn.Module):
 conv1.register_forward_hook(print_fn)
 conv1.register_backward_hook(print_fn)
 
-model.train
+model.training
 
 model.cuda()
 
@@ -449,6 +449,8 @@ y = F.binary_cross_entropy(x, target, weight=None, size_average=True)
 y = F.smooth_l1_loss(x, target, size_average=True)
 ##图像
 y = F.pad(x, pad, mode='constant', value=0)
+##正则
+y = F.normalize(x, p=2, dim=1, eps=1e-12) #除以p范数
 
 ##自定义函数
 class MyReLU(torch.autograd.Function):
@@ -560,3 +562,10 @@ init.kaiming_uniform(w, a=0, mode='fan_in')
 init.kaiming_normal(w, a=0, mode='fan_in')
 init.orthogonal(w, gain=1) #?
 init.sparse(w, sparsity, std=0.01) #?
+
+
+'''
+1.bn的momentum和tf的是反过来的
+2.optim的weight_decay会把所有参数(包括bias)都加上正则项
+3.adam之所有不好,是因为它有平方,所以精度容易丢失
+'''
