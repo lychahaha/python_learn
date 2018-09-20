@@ -48,7 +48,7 @@ s = time.strftime('%Y-%m-%d %H:%M:%S', tt)
 %p:AM/PM
 '''
 ##datetime->时间字符串
-s = datetime.datetime.strftime('%Y-%m-%d %H:%M:%S', dt)
+s = datetime.datetime.strftime(dt, '%Y-%m-%d %H:%M:%S')
 
 #datetime.datetime
 dt = datetime.datetime.now()

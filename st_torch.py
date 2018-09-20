@@ -1,5 +1,6 @@
 import torch
-from torch.autograd import Variable
+import torch.autograd as autograd 
+from torch.nn.parameter import Parameter
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.nn.init as init
@@ -10,6 +11,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+from collections import OrderedDict
 
 #层定义
 conv1 = nn.Conv2d(1, 6, 5, stride=1, padding=1) #[5,5,1,6]
@@ -26,37 +28,64 @@ x = F.relu(x)
 x = drop1(x)
 x = F.log_softmax(x)
 
+#训练
+model.train()
+
+output = model(input)
+loss = criterion(output, label)
+opt.zero_grad()
+loss.backward()
+opt.step()
+#测试
+model.eval()
+
+output = model(input)
+
 
 #全局改变
 ##改变形状
 y = torch.squeeze(x, dim=None) #(共享内存)
 y = torch.unsqueeze(x, dim) #expand_dim
-x = torch.cat(inputs, dimension=0) #concat
 ys = torch.chunk(x, chunk_size, dim=0) #?
+y = torch.reshape(x, (2,3)) #重新分配内存
+y = x.view(3, 4) #不重新分配内存
 ##改变迭代方向
 y = torch.t(x) #0,1维转置
 y = torch.transpose(x, dim0, dim1)
+y = x.permute(2,1,0) #多个维度参与的transpose
 ##连接与分割
+x = torch.cat(inputs, dim=0) #concat
 y = torch.stack(inputs, dim=0)
 ys = torch.unbind(x, dim=0) #unstack
 ys = torch.split(x, split_size, dim=0) #?
-
+##填充(把长度为1的dim扩充)
+y = x.expand(-1, 4) #(3,1)->(3,4),这里-1表示不变, 不重新分配内存
+y = x.expand_as(x2)
+y = x.repeat(*sizes) #重新分配内存,?
 
 #下标
-y = torch.gather(x, dim, index) #index和gather的shape一样
+y = torch.gather(x, dim, index) #y[i][j][k] = x[i][index[i][j][k]][k] if dim=1
 y = torch.index_select(x, dim, index) #index是一维数组
-y = torch.masked_select(x, mask) #?
+y = torch.masked_select(x, mask) #等于x[mask], x和mask的shape要一样
 y = torch.nonzero(x) #返回的shape是(none,x_dims)
-
+#切片
+y = x.narrow(dim, beg, len) #x[...,beg:beg+len,...] 中间某一维切片,但切片可能无法表示dim
+x.put(index, val) #index和val都是一维,把x当成一维处理x[index]=val
 
 #生成
 ##随机
 x = torch.rand(5, 3) #01均匀分布
 x = torch.randn(5, 3) #标准正态分布
-x = torch.randperm(n)
+x = torch.randperm(n) #全排列
 ##填充
+x = torch.empty(5, 3)
 x = torch.ones(5, 3)
 x = torch.zeros(5, 3)
+x = torch.full((5,3), 2)
+y = torch.empty_like(x)
+y = torch.ones_like(x)
+y = torch.zeros_like(x)
+y = torch.full_like(x, 2)
 ##数列
 x = torch.arange(start, end, step=1)
 x = torch.linspace(start, end, steps=100) #左闭右闭
@@ -66,11 +95,115 @@ x = torch.eye(n, m=None)
 y = torch.diag(x, diagonal=0) #矩阵<->对角线,diagonal控制对角线(大于0向上偏移)
 
 
+#保存读取
+torch.save(model, 'model.pth.tar') #保存整个神经网络的结构和模型参数
+model = torch.load('model.pth.tar')
+model = torch.load('model.pth.tar', map_location='cpu') #以cpu模式打开
+torch.save(model.state_dict(), 'params.pkl') #只保存神经网络的模型参数
+model_object.load_state_dict(torch.load('params.pkl'))
 
+
+#tensor
+##构造
+x = torch.tensor(data, dtype=torch.float64, device='cuda:1', requires_grad=True)
+x = torch.Tensor(5, 3)
+x = torch.FloatTensor([0.1,0.2,0.3])
+x = torch.cuda.FloatTensor([1,2,3])
+##成员
+fn = x.grad_fn #梯度函数
+grad = x.grad #梯度
+##属性
+a = x.dtype #数据类型
+a = x.type() #张量类型
+a = x.size() #shape
+a = torch.numel(x) #size
+a = x.dim() #维数
+a = x.data_ptr() #头指针
+a = x.element_size() #数据类型的字节数
+a = x.requires_grad #是否需要并回传梯度
+a = x.is_leaf #是否是叶子
+a = x.is_contiguous() #是否连续
+a = x.is_cuda
+##特殊方法
+x.fill_(1.2)
+x.map_(y, fx) #def fx:(a,b)->c
+
+x.resize_(*sizes) #?
+x.scatter(y, dim, index) #?
+x.select(dim, index) #?
+##
+x.requires_grad_(True) #需要梯度
+x.retain_grad() #非叶子节点也保留梯度
+x.detach_() #将x从计算图中排除
+##
+x.index_add_?
+x.index_copy_?
+x.index_fill_?
+x.index_put_?
+x.masked_fill?
+x.masked_scatter?
+##复制
+x.copy_(y) #将y的数值复制给x
+y = x.detach() #没梯度的复制
+y = x.clone() #梯度会回传到原tensor
+y = x.contiguous() #如果内存连续,则返回x本身(一般切片和转置会导致不连续)
+##类型转换
+y = x.to(torch.int64)
+y = x.to(torch.device('cuda'))
+y = x.byte() #还有float,int
+y = x.cuda()
+##数据类型
+torch.float,torch.float32
+torch.double,torch.float64
+torch.half,torch.float16
+torch.uint8
+torch.int8
+torch.short,torch.int16
+torch.int,torch.int32
+torch.long,torch.int64
+##tensor类型
+torch.FloatTensor #默认
+torch.DoubleTensor
+torch.cuda.HalfTensor #16位浮点数
+torch.ByteTensor #unsigned
+torch.CharTensor
+torch.ShortTensor
+torch.IntTensor
+torch.LongTensor
+##设备类型
+cuda1 = torch.device('cuda:1')
+cpu = torch.device('cpu')
+##库转换
+x = x.numpy()
+x = torch.from_numpy(x)
+x = x.item() #0维张量变成python数字
+x = x.tolist() #变成python的list
+
+
+
+#cuda
+a = torch.cuda.is_available() #是否能用gpu
+a = torch.cuda.device_count()
+torch.cuda.device(1) #切换到gpu-1
+model = nn.DataParallel(model) #多GPU
+#cpu
+a = torch.get_num_threads()
+torch.set_num_threads(a)
 
 y = torch.bernoulli(x) #x<0.5->y=0,x>=0.5->y=1(x的值域必须是[0,1])
 y = torch.multinomial(x, num_samples, replacement=False) #?
 x = torch.normal(means, stds) #?
+
+
+#测速上下文
+with autograd.profiler.profile(enabled=True, use_cuda=False) as prof:
+    pass
+print(prof)
+#报错显示正确错误位置的上下文
+autograd.detect_anomaly()
+#不计算梯度的上下文
+torch.no_grad()
+
 
 
 #数学
@@ -87,6 +220,8 @@ y = torch.frac(x) #返回小数部分
 ##指数
 y = torch.exp(x)
 y = torch.log(x)
+y = torch.log2(x)
+y = torch.log10(x)
 y = torch.log1p(x) #log(x+1)
 ##三角函数
 y = torch.cos(x)
@@ -124,13 +259,15 @@ y = torch.dist(x, y, p=2) #x-y的p范数
 ##前缀
 y = torch.cumsum(x, dim)
 y = torch.cumprod(x, dim)
-##大小于
+##布尔值
 z = torch.eq(x, y)
 z = torch.ge(x, y)
 z = torch.gt(x, y)
 z = torch.le(x, y)
 z = torch.lt(x, y)
 z = torch.ne(x, y)
+y = x.all() #byteTensor独有
+y = x.any() #byteTensor独有
 ##最大最小
 z = torch.max(x, y)
 y,y_ix = torch.max(x, dim)
@@ -154,6 +291,7 @@ s,v,d = torch.svd(x, some=True) #some?
 ##聚合
 a = torch.mean(x)
 y = torch.mean(x, dim)
+y = torch.mean(x, dim, keepdim)
 a = x.mean()
 a = torch.var(x)
 a = torch.std(x)
@@ -180,74 +318,12 @@ y = torch.renorm(x, p, dim, maxnorm) #?
 a = torch.is_tensor(x)
 
 
-#tensor
-##构造
-x = torch.Tensor(5, 3)
-x = torch.FloatTensor([0.1,0.2,0.3])
-##属性
-a = x.size() #shape
-a = torch.numel(x) #size
-a = x.dim() #维数
-a = x.data_ptr() #头指针
-a = x.element_size() #数据类型的字节数
-##特殊方法
-x.fill_(1.2)
-x.map_(y, fx) #def fx:(a,b)->c
-x.repeat(*sizes) #?
-x.resize_(*sizes) #?
-x.scatter(y, dim, index) #?
-x.select(dim, index) #?
-##reshape
-y = x.view(3, 5)
-y = x.view(-1, 5)
-##复制
-y = x.clone()
-y = x.contiguous() #如果内存连续,则返回x本身
-##转换
-y = x.type(torch.FloatTensor)
-##类型
-torch.FloatTensor #默认
-torch.DoubleTensor
-torch.cuda.HalfTensor #16位浮点数
-torch.ByteTensor #unsigned
-torch.CharTensor
-torch.ShortTensor
-torch.IntTensor
-torch.LongTensor
-
-
-#variable
-##构造
-x = Variable(torch.ones(2,2), requires_grad=True) #requires_grad表示backward时是否需要计算其梯度
-x = Variable(torch.ones(2,2), volatile=True) #适用于inference时输入设置,自己和后续不会保存中间状态
-##成员
-y = x.grad #variable
-y = x.data #tensor
-op = x.creator #f
-
-
-a = torch.cuda.device_count()
-
-
-a = torch.get_num_threads()
-torch.set_num_threads(a)
-
-
-#转换
-x.numpy()
-torch.from_numpy(a) #共享内存
-x.cuda()
-
-
-torch.cuda.is_available()
-
-
-torch.cuda.device(1)
 
 
 
 x.backward(k)
 x.backward()
+x.backward(retain_graph=True) #保留计算图,不然只能backward一次
 
 
 #随机数种子
@@ -268,7 +344,7 @@ opt = optim.Adamax(params, lr=2e-3, betas=(0.9,0.999), eps=1e-8, weight_decay=0)
 opt = optim.ASGD(params, lr=0.01, lambd=1e-4, alpha=0.75, t0=1e6, weight_decay=0)
 opt = optim.LBFGS(params, lr=1, max_iter=20, max_eval=None, tolerance_grad=1e-05, tolerance_change=1e-09, history_size=100, line_search_fn=None)
 opt = optim.Rprop(params, lr=0.01, etas=(0.5, 1.2), step_sizes=(1e-06, 50))
-##不同参数不同超参数
+###不同参数不同超参数
 opt = optim.SGD(
     [
         {'params':model.base.parameters()},
@@ -276,11 +352,46 @@ opt = optim.SGD(
     ]
     lr=1e-2, momentum=0.9
 )
+
 ##方法
-optimizer.zero_grad()
 optimizer.step()
+optimizer.zero_grad()
+##读写
+'''
+state_dict包含state和param_groups,
+state放着opt中间变量,比如adam的滑动均值和方差
+param_groups主要是构造时给的东西
+'''
 optimizer.load_state_dict(state_dict)
 d = optimizer.state_dict()
+
+##学习率调度器
+###构造
+lrs = optim.lr_scheduler.LambdaLR(opt, lr_lambda, last_epoch=-1) #lr_lambda是epoch->k, lr=base_lr*k, 这里lr_lambda可以是针对多个group的list
+lrs = optim.lr_scheduler.StepLR(opt, step_size, gamma=0.1, last_epoch=-1) #每step个epoch,学习率乘gamma
+lrs = optim.lr_scheduler.MultiStepLR(opt, milestones, gamma=0.1, last_epoch=-1) #milestones是个step的列表,每到其中的某个step,学习率乘gamma
+lrs = optim.lr_scheduler.ExponentialLR(opt, gamma, last_epoch=-1) #指数衰减,相当于step=1的stepLR
+lrs = optim.lr_scheduler.CosineAnnealingLR(opt, T_max, eta_min=0, last_epoch=-1) #余弦衰减,lr=eta_min+(base_lr-eta_min)*(1+cos(t/T_max*pi))/2
+lrs = optim.lr_scheduler.ReduceLROnPlateau(opt, mode='min', factor=0.1, patience=10, verbose=False, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
+'''
+loss不变,才变学习率的调度器,变是指数衰减
+mode:'min'|'max',表明loss是要尽量大还是尽量小
+factor:相当于指数衰减里的gamma
+patience:最多容忍多少个epoch
+verbose:学习率改变时,是否打印
+threshold:阈值
+threshold_mode:'rel'|'abs',判断好坏是根据相对距离,还是绝对距离
+cooldown:改变学习率后,有多少个epoch完全不管好坏
+min_lr:学习率下限
+'''
+###方法
+lrs.step(epoch=None) #更新epoch,默认+1
+lrs.get_lr() #当前lr
+###读写
+state_dict = lrs.state_dict()
+lrs.load_state_dict(state_dict)
+
+
 
 
 #loss
@@ -288,27 +399,24 @@ d = optimizer.state_dict()
 loss_fn = Loss()
 loss = loss_fn(out, target)
 ##类型
-loss_fn = nn.CrossEntropyLoss(weight=None, size_average=True) #weight是一维tensor,代表n类的权重
-loss_fn = nn.MSELoss(size_average=True)
-loss_fn = nn.L1Loss(size_average=True)
-loss_fn = nn.NLLLoss(weight=None, size_average=True) #log_softmax + nll = cross_entropy
-loss_fn = nn.NLLLoss2d(weight=None, size_average=True)
-loss_fn = nn.KLDivLoss(weight=None, size_average=True) #没有维度限制的nll
-loss_fn = nn.BCELoss(weight=None, size_average=True) #二分类,输出只有一个的交叉熵
-loss_fn = nn.MarginRankingLoss(margin=0, size_average=True) #max(0,-y*(x1-x2)+margin),输入是(x1,x2,y)
-loss_fn = nn.HingeEmbeddingLoss(margin=1, size_average=True) #xi,max(0,margin-xi)
-loss_fn = nn.MultiLabelMarginLoss(size_average=True) #sum_ij max(0,1-(x[y[j]]-x[i]))
-loss_fn = nn.SmoothL1Loss(size_average=True) #0.5(xi-yi)^2 if |xi-yi|<1 else |xi-yi|-0.5
-loss_fn = nn.SoftMarginLoss(size_average=True) #二分类,log(1+exp(-y[i]*x[i]))
-loss_fn = nn.MultiLabelSoftMarginLoss(weight=None, size_average=True) #y[i]log(e^x[i]/(1+e^[xi]))+(1-y[i])log(1/(1+e^x[i]))
-loss_fn = nn.CosineEmbeddingLoss(margin=0, size_average=True) #{1-cos(x1,x2),max(0,cos(x1,x2)-margin)},输入是(x1,x2,y)
-loss_fn = nn.MultiMarginLoss(p=1, margin=1, weight=None, size_average=True) #(max(0, margin-x[y]+x[i]))^p
+###reduction是reduce类型,可以选'none'|'elementwise_mean'|'sum'
+loss_fn = nn.CrossEntropyLoss(weight=None, reduction='elementwise_mean') #weight是一维tensor,代表n类的权重
+loss_fn = nn.MSELoss(reduction='elementwise_mean')
+loss_fn = nn.L1Loss(reduction='elementwise_mean')
+loss_fn = nn.NLLLoss(weight=None, reduction='elementwise_mean') #log_softmax + nll = cross_entropy
+loss_fn = nn.NLLLoss2d(weight=None, reduction='elementwise_mean')
+loss_fn = nn.KLDivLoss(weight=None, reduction='elementwise_mean') #没有维度限制的nll
+loss_fn = nn.BCELoss(weight=None, reduction='elementwise_mean') #二分类,输出只有一个的交叉熵
+loss_fn = nn.MarginRankingLoss(margin=0, reduction='elementwise_mean') #max(0,-y*(x1-x2)+margin),输入是(x1,x2,y)
+loss_fn = nn.HingeEmbeddingLoss(margin=1, reduction='elementwise_mean') #xi,max(0,margin-xi)
+loss_fn = nn.MultiLabelMarginLoss(reduction='elementwise_mean') #sum_ij max(0,1-(x[y[j]]-x[i]))
+loss_fn = nn.SmoothL1Loss(reduction='elementwise_mean') #0.5(xi-yi)^2 if |xi-yi|<1 else |xi-yi|-0.5
+loss_fn = nn.SoftMarginLoss(reduction='elementwise_mean') #二分类,log(1+exp(-y[i]*x[i]))
+loss_fn = nn.MultiLabelSoftMarginLoss(weight=None, reduction='elementwise_mean') #y[i]log(e^x[i]/(1+e^[xi]))+(1-y[i])log(1/(1+e^x[i]))
+loss_fn = nn.CosineEmbeddingLoss(margin=0, reduction='elementwise_mean') #{1-cos(x1,x2),max(0,cos(x1,x2)-margin)},输入是(x1,x2,y)
+loss_fn = nn.MultiMarginLoss(p=1, margin=1, weight=None, reduction='elementwise_mean') #(max(0, margin-x[y]+x[i]))^p
 
 
-model = nn.DataParallel(model)
-
-
-param.requires_grad = False #不更新权重
 
 
 #module
@@ -336,8 +444,8 @@ unpool1 = nn.MaxUnpool2d(kernel_size, stride=None, padding=0)
 y = unpool1(x, indices, output_size=input.size())
 pool1 = nn.FractionalMaxPool2d(kernel_size, output_size=None, output_ratio=None, return_indices=False, _random_samples=None) #?
 pool1 = nn.LPPool2d(norm_type, kernel_size, stride=None, ceil_mode=False) #?
-pool1 = nn.AdaptiveMaxPool2d(output_size, return_indices=False) #?
-pool1 = nn.AdaptiveAvgPool2d(output_size) #?
+pool1 = nn.AdaptiveMaxPool2d(output_size, return_indices=False) #global max pool
+pool1 = nn.AdaptiveAvgPool2d(output_size) #global avg pool
 ###rnn
 rnn1 = nn.RNN(input_size, hidden_size, num_layers, nonlinearity='tanh', bias=True, batch_first, dropout, bidirectional=False) #?
 rnn1 = nn.LSTM(input_size, hidden_size, num_layers, bias=True, batch_first, dropout, bidirectional=False)
@@ -370,34 +478,86 @@ nn.Tanhshrink() #x-tanh(x)
 nn.Softmin() #yi=e(-xi)/(sum_e(-xj))
 nn.Softmax() #yi=e(xi)/(sum_e(xj))
 nn.LogSoftmax() #log(softmax(x))
-##序列
-conv = nn.Sequential(
+
+
+##序列(为了把多个module合成一个调用)(参数是*args,或者是有序dict)
+block = nn.Sequential(
     nn.Conv2d(1,6,3),
     nn.ReLU(True)
 )
+block = nn.Sequential(OrderedDict([
+    ('conv1',nn.Conv2d(1,6,3)),
+    ('relu1',nn.ReLU(True))
+]))
+y = block(x)
+##列表(为了能分开调用,并且父亲model能遍历到它们)
+blocks = nn.ModuleList([
+    nn.Conv2d(1,6,3),
+    nn.Conv2d(3,6,3)
+])
+y0 = blocks[0](x0)
+y1 = blocks[1](x1)
+##字典(理由同上)
+blocks = ModuleDict({
+    'conv0':nn.Conv2d(1,6,3),
+    'conv1':nn.Conv2d(3,6,3),
+})
+y0 = blocks['conv0'](x0)
+y1 = blocks['conv1'](x1)
+##多parameter情况
+params = nn.ParameterList([p1,p2,p3])
 
-params = model.parameters()
-model.zero_grad()
 
+##自定义module
 class MyNet(nn.Module):
+    def __init__(self):
+        #添加module
+        self.fc = nn.Linear(256,16)
+        self.add_module("fc", nn.Linear(256,16))
+        #添加临时变量(非参数)
+        self.register_buffer(name, tensor)
+        #添加参数
+        self.register_parameter('w', Parameter(torch.Tensor(256,16)))
+        self.w = Parameter(torch.Tensor(256,16))
+
     def forward(self, x):
         return x
 
-    def print_fn(self, inputs, output):
-        pass
 
-    def print_fn(self, grad_input, grad_output):
-        pass
+##遍历
+###state_dict
+'''
+一个有序字典,name->所有子孙module的parameter和buffer
+'''
+model.state_dict(destination=None, prefix='', keep_vars=False)#prefix是前缀
+model.load_state_dict(state_dict, strict=True) #有(不匹配,漏了,多了)的情况会抛出异常
+###参数生成器
+model.parameters(recurse=True) #生成(p)
+model.named_parameters(prefix='', recurse=True) #生成(name,p)
+model.buffers(recurse=True)
+model.named_buffers(prefix='', recurse=True)
+###模块生成器
+model.children() #儿子模块
+model.named_children()
+model.modules() #子孙模块
+model.named_modules(prefix='')
 
-conv1.register_forward_hook(print_fn)
-conv1.register_backward_hook(print_fn)
 
-model.training
-
+##改变状态
+###类型转换(和tensor一样)
+model.to(torch.float64)
+model.to(torch.device('cuda'))
 model.cuda()
-
+model.cpu()
+###训练测试模式
+model.training #是否是训练模式
 model.train()
 model.eval()
+###梯度
+model.zero_grad()
+###万能
+model.apply(fn)
+
 
 
 #function
@@ -443,16 +603,19 @@ y = F.dropout(x, p=0.5, training=False, inplace=False)
 ##dist
 y = F.pairwise_distance(x1, x2, p=2, eps=1e-6)
 ##loss
-y = F.nll_loss(x, target, weight=None, size_average=True)
-y = F.kl_div(x, target, size_average=True)
-y = F.binary_cross_entropy(x, target, weight=None, size_average=True)
-y = F.smooth_l1_loss(x, target, size_average=True)
+y = F.nll_loss(x, target, weight=None, reduction='elementwise_mean')
+y = F.kl_div(x, target, reduction='elementwise_mean')
+y = F.binary_cross_entropy(x, target, weight=None, reduction='elementwise_mean')
+y = F.smooth_l1_loss(x, target, reduction='elementwise_mean')
 ##图像
 y = F.pad(x, pad, mode='constant', value=0)
 ##正则
 y = F.normalize(x, p=2, dim=1, eps=1e-12) #除以p范数
 
 ##自定义函数
+'''
+forward内部所有变量都没有梯度,因为Function就是计算图的最小单元
+'''
 class MyReLU(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input):
@@ -465,6 +628,49 @@ class MyReLU(torch.autograd.Function):
         grad_input = grad_output.clone()
         grad_input[input<0] = 0
         return grad_input
+
+class XX(torch.autograd.Function):
+    def __init__(self):
+        pass
+
+    def forward(self, x1, x2):
+        return y1,y2
+
+    def backward(self, grad_y1, grad_y2):
+        return grad_x1,grad_x2
+        #return grad_x1,None
+
+##hook
+
+###nn.Module
+def forward_hook_fn(module, inputs, outputs):
+    #不能修改输入和输出
+    #一定要返回None
+    return None
+
+def backward_hook_fn(module, grad_inputs, grad_outputs):
+    #不能修改输入和输出
+    #但你可以返回另一个张量作为输入的梯度
+    #backward只能作用在model的最后一个Function
+    return another_grad_inputs
+
+def forward_per_hook_fn(module, inputs):
+    #不能修改输入
+    #一定要返回None
+    return None
+
+handle = model.register_forward_hook(forward_hook_fn)
+handle = model.register_backward_hook(backward_hook_fn)
+handle = model.register_forward_pre_hook(forward_per_hook_fn)
+handle.remove() #去掉这个hook
+
+###Tensor
+def hook_fn(grad_x):
+    #它相当于backward_hook
+    #用来修改某个张量的梯度
+    return modified_grad_x
+
+handle = x.register_hook(hook_fn)
 
 
 #transform
@@ -507,13 +713,6 @@ squeezenet = models.squeezenet1_0() #1.0,1.1
 densenet = models.densenet_161() #121,161,169,201
 
 
-#保存读取
-torch.save(model, 'model.pkl') #保存整个神经网络的结构和模型参数
-model = torch.load('model.pkl')
-torch.save(model.state_dict(), 'params.pkl') #只保存神经网络的模型参数
-model_object.load_state_dict(torch.load('params.pkl'))
-
-
 #dataset
 ##网上数据集
 mnist_train = datasets.MNIST(root, train=True, transform=None, target_transform=None, download=False)
@@ -551,17 +750,17 @@ for i,data in enumerate(train_loader):
 
 
 #init
-init.constant(w, val)
-init.uniform(w, a=0, b=1) #均匀分布
-init.normal(w, mean=0, std=1)
-init.eye(w) #单位矩阵
-init.dirac(w) #?
-init.xavier_uniform(w, gain=1) #glorot,gain是倍数
-init.xavier_normal(w, gain=1)
-init.kaiming_uniform(w, a=0, mode='fan_in')
-init.kaiming_normal(w, a=0, mode='fan_in')
-init.orthogonal(w, gain=1) #?
-init.sparse(w, sparsity, std=0.01) #?
+init.constant_(w, val)
+init.uniform_(w, a=0, b=1) #均匀分布
+init.normal_(w, mean=0, std=1)
+init.eye_(w) #单位矩阵
+init.dirac_(w) #?
+init.xavier_uniform_(w, gain=1) #glorot,gain是倍数,bound=sqrt(6/(i+o))
+init.xavier_normal_(w, gain=1) #std=sqrt(2/(i+o))
+init.kaiming_uniform_(w, a=0, mode='fan_in') #mode还可以是fan_out,bound=sqrt(6/((1+a2)*mode))
+init.kaiming_normal_(w, a=0, mode='fan_in') #std=sqrt(2/((1+a2)*mode))
+init.orthogonal_(w, gain=1) #?
+init.sparse_(w, sparsity, std=0.01) #?
 
 
 '''
