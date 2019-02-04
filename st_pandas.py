@@ -106,3 +106,4 @@ df.copy()
 
 #均值
 df.mean(axis=0)
+

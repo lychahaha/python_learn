@@ -115,6 +115,7 @@ grad = x.grad #梯度
 ##属性
 a = x.dtype #数据类型
 a = x.type() #张量类型
+a = x.shape
 a = x.size() #shape
 a = torch.numel(x) #size
 a = x.dim() #维数
@@ -349,7 +350,7 @@ opt = optim.SGD(
     [
         {'params':model.base.parameters()},
         {'params':model.classifier.parameters(), 'lr':1e-3}
-    ]
+    ],
     lr=1e-2, momentum=0.9
 )
 
