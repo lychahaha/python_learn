@@ -16,10 +16,20 @@ try:
 except:
 	pass
 
+#指定错误类型
 try:
 	pass
 except NameError as e:
-	print e
+	print(e)
+except IOError as e:
+	print(e)
+
+#继续往上报错
+try:
+	pass
+except:
+	print(e)
+	raise
 
 #成功:try->else
 #失败:try->except
@@ -64,32 +74,13 @@ def __exit__(self, exc_type, exc_value, traceback):
 	pass
 
 
-#名字错误
-#名字未定义
-NameError
+NameError #名字错误,名字未定义
+SyntaxError #语法错误
+IOError #IO错误
+ZeroDivisionError #除零错误
+ValueError #值错误,强制类型转换时
+AssertionError #断言错误
+KeyboardInterrupt #键盘中断
+BaseException #基础异常
+Exception #异常
 
-#语法错误
-SyntaxError
-
-#IO错误
-IOError
-
-#除零错误
-ZeroDivisionError
-
-#值错误
-#强制类型转换时
-ValueError
-
-#断言错误
-#assert断言失败
-AssertionError
-
-#基础异常
-BaseException
-
-#异常
-Exception
-
-#键盘中断
-KeyboardInterrupt
