@@ -1,30 +1,53 @@
 #jh:func-base-mixsimilar,lazy-type
-#coding=utf-8
+import importlib
+import os,sys
 
+
+'''外部导入'''
 import xxx
-from xxx import xxx,yyy
+import xxx as xx
+import xxx.xx
+from xxx import xx,yy
+from xxx import xx as x
 from xxx import *
 
-#import子模块(目录)里的__init__.py
-import son_package
 
-#import子模块(目录)夹里的一般py文件
-from son_package import son_py
-import son_package.son_py
+'''内部导入'''
 
-#从子模块(目录)的__init__.py文件里import
-from son_package import son_val
+#import当前目录的module
+from . import module
+#import当前目录的package(就是下一级目录的__init__.py,只是它可以索引下级目录的其他module)
+from . import package
 
-#import当前模块(目录)里的一般py文件
-import cur_py
+#import当前目录的module里的变量
+from .module import val
+#import当前目录的package里的变量
+from .package import val
 
-#从当前模块(目录)的__init__.py文件里import
-from . import cur_val
+#import下一级目录的module
+from .package import module
+#import下两级目录的module
+from .p1.p2 import module
 
-#从当前模块(目录)的xxx.py里import
-from cur_py import cur_val
-from .cur_py import curval#有__init__.py
+#import下一级目录的module里的变量
+from .package.module import val
 
-#从上一级目录的xxx.py里import
-from ..cur_py import cur_val
+#import上一级目录的module
+from .. import module
 
+#import上两级目录的package里的变量(上一级目录的__init__.py里的变量)
+from .. import val
+
+
+'''变量导入(外部导入)'''
+module = __import__('module')
+package = __import__('package')
+module = __import__('package.module', fromlist=True)
+
+
+'''其他'''
+#重载
+importlib.reload(xxx)
+
+#增加搜索路径
+sys.path.append(path)
