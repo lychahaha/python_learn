@@ -23,6 +23,8 @@ except NameError as e:
 	print(e)
 except IOError as e:
 	print(e)
+except (AttributeError,AssertionError) as e:
+	print(e)
 
 #继续往上报错
 try:

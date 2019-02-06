@@ -1,79 +1,153 @@
 #jh:func-base,full-type
 #coding=utf-8
 
-class myClass(object):
-	def __init__(self, *args):
-		'''构造函数'''
+class MyClass(object):
+	def __init__(self, *args, **kw):
+		'''MyClass(), 构造函数'''
 		pass
 
+	def __new__(self, *args, **kw)
+		pass#?
+
+	def __del__(self):
+		pass#?
+
+
+
+
 	def __str__(self):
-		'''内建str方法,obj->str'''
+		'''str(k)'''
 		pass
 
 	def __repr__(self):
-		'''内建repr方法,调试时obj->str'''
+		'''repr(k),调试时调用'''
 		pass
 
+	def __len__(self):
+		'''len(k)'''
+		pass
+
+
+
+
+	'''
+	for i in xx:
+		...
+	xx.__iter__返回一个有__next__方法的对象xxx,一般返回自己
+	每次迭代都会调用xxx.__next__方法,得到下一个值,迭代完则抛出StopIteration异常
+
+	__iter__和__next__对应内建函数iter(xx)和next(xx)
+	'''
 	def __iter__(self):
-		'''返回可迭代对象,一般返回自己,此时需要实现next方法'''
+		'''iter(k)'''
+		self.a = 0
 		return self
 
-	def next(self):
+	def __next__(self):
+		'''next(k)'''
 		self.a += 1
 		if self.a > 10000:
 			raise StopIteration()
 		return self.a
+	
+	'''
+	iter有两个参数时,直接调用iter_obj.__call__(不带任何参数)
+	当iter_obj.__call__返回等于stop的值,外部会抛出StopIteration异常,循环结束
 
-	def __getitem__(self, n):
-		'''实现下标,索引,切片读操作'''
-		if isinstance(n, int):
-			#下标运算
-			pass
-		elif isinstance(n, slice):
-			#切片运算
-			start = n.start
-			stop = n.stop
-			pass
-		else:
-			pass
+	next有两个参数时,cache到StopIteration异常,会返回default(后面继续调用也继续返回)
+	'''
+	iter(iter_obj, stop)
+	next(iter_obj, default)
 
-	def __setitem__(self, n):
-		'''实现下标,索引,切片写操作'''
+
+
+
+	def __call__(self, *args, **kw):
+		'''k(*args, **kw) ,实现对象的调用)'''
 		pass
 
-	def __delitem__(self, n):
-		#?
+
+
+
+	def __getitem__(self, key):
+		'''k[key], 实现索引切片读操作'''
+		if isinstance(key, int):
+			#下标运算
+			pass
+		elif isinstance(key, slice):
+			#切片运算
+			start,stop,step = key.start,key.stop,key.step
+			pass
+
+	def __setitem__(self, key, val):
+		'''k[key]=val, 实现索引切片写操作'''
+		pass
+
+	def __delitem__(self, key):
+		pass#?
+
+	def __contains__(self, key):
+		'''key in k'''
+		pass
+
+	def __missing__(self, key):
+		'''k[key], 当这个键不存在时调用'''
+		pass#?
+
+
+
+
+	def __enter__(self):
+		'''上下文进入时调用,返回一个对象'''
+		pass
+
+	def __exit__(self, exc_type, exc_value, traceback):
+		'''上下文离开时调用'''
+		pass
+
+
+
+
+	'''
+	关于__getattr__, __setattr__, __getattribute__, property
+	get attribute流程
+		1	调用类的__getattribute__
+		2.1	如果用户觉得非法,可以在这里卡住(返回None等等)
+		2.2	调用super().__getattribute__(一般会传到object)
+		2.3 报AttributeError错误,直接跳到__getattr__(参考4)
+		3	object.__getattribute__里判断
+		3.1	如果本身有这个属性,则返回这个属性,多级返回到类的__getattribute__
+		3.2	如果有这个property,则调用它的getter,再多级返回到类的__getattribute__
+		3.3 如果都没有,则报AttributeError错误
+		4.1	类的__getattribute__往上返回,完成操作
+		4.2	上面所有过程类会cache AttributeError,然后调用__getattr__
+		5	__getattr__直接返回一个值(不会再经过__getattribute__),完成操作
+	set attribute流程
+		1	调用__setattr__
+		2.1	如果用户觉得非法,可以在这里卡住(返回None等等)
+		2.2	调用super().__setattr__(一般会传到object)
+		3	object.__setattr__里判断
+		3.1	如果本身有这个属性,则直接赋值
+		3.2	如果有这个property,则调用它的setter
+		4	经多级返回到类的__setattr__,再往上返回,完成操作
+	'''
 
 	def __getattr__(self, attr):
-		'''
-			内建getattr方法
-			实现类数据或类方法的读操作
-			仅当属性没有找到时调用
-		'''
-		if attr == 'score':
-			#类数据,返回数据
-			return 100
-		elif attr == 'get_score':
-			#类方法,返回函数
-			return lambda:100
+		pass
 
 	def __setattr__(self, attr, val):
-		'''实现类数据或类方法的写操作'''
 		pass
 
 	def __delattr__(self, attr):
-		#?
+		pass#?
 
 	def __getattribute__(self, attr):
-		'''
-			内建getattribute方法
-			实现类数据或类方法的读操作
-			无论数据或方法是否存在,都先调用该函数
-			不能使用dict寻找属性,这样会导致无限递归
-			要使用super(cl,self).__getattribute__(item)
-			由于父类(或最终父类)没有实现__getattribute__,因此不会产生无限递归
-		'''
 		pass
+
+
+	'''
+	property有下面两种方式实现
+	'''
 
 	def getx(self):
 		pass
@@ -84,175 +158,352 @@ class myClass(object):
 	x = property(getx, setx, delx)
 
 	@property
-	def name(self):
-		return self.__name
-	@name.setter
-	def name(self, val):
-		self.__name = val
-	@name.deleter
-	def name(self):
-		del self.__name
-
-	def __get__(self, attr):
-		'''获取对象本身'''
+	def x(self):
+		pass
+	@x.setter
+	def x(self, val):
+		pass
+	@x.deleter
+	def x(self):
 		pass
 
-	def __set__(self, attr):
-		'''设置对象本身'''
+
+	'''
+	getattr和setattr相当于obj.name和obj.name=val
+	就是说getattr也会进入obj.__getattribute__,参与attribute流程
+	obj.__getattr__抛出AttributeError异常,getattr会cache并返回default(除非没default)
+	hasattr通过是否抛出AttributeError异常来判断有没有这个属性
+	'''
+	getattr(obj, name, default)
+	setattr(obj, name, val)
+	hasattr(obj, name)
+
+
+	'''
+	这个类的对象被某个类owner拥有时
+	当owner的某个实例instance访问到这个对象时
+	当attribute流程执行到object.__getattribute__和objest.__setattr__时
+	会分别调用__get__和__set__
+
+	它的定位是用来代替property
+	把property的get,set,del函数封装到一个单独的类里
+	与owner分离开
+	'''
+
+	def __get__(self, instance, owner):
 		pass
 
-	def __delete__(self, attr):
-		'''删除对象本身'''
+	def __set__(self, instance, value):
 		pass
 
-	def __call__(self, *args):
-		'''实现对象的调用(参数表可没有)'''
+	def __delete__(self, instance):
+		pass#?
+
+
+
+
+	def __dir__(self):
+		'''dir(k)'''
 		pass
 
-	def __new__(self, *args):
-		#?
 
-	def __del__(self, * args):
-		#?
 
-	def __unicode__(self):
-		'''内建unicode方法,obj->unicode'''
+
+	def __reversed__(self):
+		'''reversed(k)'''
 		pass
 
-	def __nonzero__(self):
-		'''内建bool方法,obj->bool'''
+
+
+
+	def __hash__(self):
+		'''
+		hash(k)
+		dict,set等需要唯一标记一个对象,它们会调用hash(k)
+		如果发现两个hash一样,则会调用__eq__
+
+		k.__hash__返回一个int作为hash值
+		定义__hash__,需要先定义__eq__
+		'''
 		pass
 
-	def __len__(self):
-		'''内建len方法'''
-		pass
 
-	def __cmp__(self, obj):
-		'''内建cmp'''
-		pass
+
+
+	@classmethod
+	def __instancecheck__(cls, instance):
+		'''isinstance(instance, class)'''
+		pass#?
+
+	def __subclasscheck__(cls, subclass):
+		'''issubclass(instance, class)'''
+		pass#?
+
 
 	def __lt__(self, obj):
-		'''小于号操作符'''
+		'''k<obj'''
 		pass
 
 	def __gt__(self, obj):
-		'''大于号操作符'''
+		'''k>obj'''
 		pass
 
 	def __eq__(self, obj):
-		'''等号操作符'''
+		'''k==obj,默认是id(k)==id(obj)'''
 		pass
 
 	def __le__(self, obj):
-		'''小于等于操作符'''
+		'''k<=obj'''
 		pass
 
 	def __ge__(self, obj):
-		'''大于等于操作符'''
+		'''k>=obj'''
 		pass
 
 	def __ne__(self, obj):
-		'''非运算操作符'''
+		'''k!=obj'''
 		pass
 
+
+
+
 	def __add__(self, obj):
-		'''加号操作符'''
+		'''k+obj'''
 		pass
 
 	def __sub__(self, obj):
-		'''减号操作符'''
+		'''k-obj'''
 		pass
 
 	def __mul__(self, obj):
-		'''乘号操作符'''
+		'''k*obj'''
 		pass
 
-	def __div__(self, obj):
-		'''除号操作符'''
+	def __matmul__(self, obj):
+		'''k@obj, 矩阵乘法'''
 		pass
 
 	def __truediv__(self, obj):
-		'''整数除法操作符'''
+		'''k//obj'''
 		pass
 
 	def __floordiv__(self, obj):
-		'''实数除法操作符'''
+		'''k/obj'''
 		pass
 
 	def __mod__(self, obj):
-		'''模运算操作符'''
+		'''k%obj'''
 		pass
 
 	def __divmod__(self, obj):
-		'''内建divmod方法'''
+		'''divmod(k,obj)'''
 		pass
 
 	def __pow__(self, obj):
-		'''内建pow方法,幂操作符'''
+		'''k**obj,或者pow(k,obj)'''
 		pass
 
 	def __lshift__(self, obj):
-		'''左移操作符'''
+		'''k<<obj'''
 		pass
 
 	def __rshift__(self, obj):
-		'''右移操作符'''
+		'''k>>obj'''
 		pass
 
 	def __and__(self, obj):
-		'''与操作符'''
+		'''k&obj'''
 		pass
 
 	def __or__(self, obj):
-		'''或操作符'''
+		'''k|obj'''
 		pass
 
 	def __xor__(self, obj):
-		'''异或操作符'''
+		'''k^obj'''
 		pass
 
+
+
+
+	'''
+	当上面左运算没找到时,会尝试找右运算
+	'''
+
+	def __radd__(self, obj):
+		'''obj+k'''
+		pass
+
+	def __rsub__(self, obj):
+		'''obj-k'''
+		pass
+
+	def __rmul__(self, obj):
+		'''obj*k'''
+		pass
+
+	def __rmatmul__(self, obj):
+		'''obj@k, 矩阵乘法'''
+		pass
+
+	def __rtruediv__(self, obj):
+		'''obj//k'''
+		pass
+
+	def __rfloordiv__(self, obj):
+		'''obj/k'''
+		pass
+
+	def __rmod__(self, obj):
+		'''obj%k'''
+		pass
+
+	def __rdivmod__(self, obj):
+		'''divmod(obj,k)'''
+		pass
+
+	def __rpow__(self, obj):
+		'''obj**k,或者pow(obj,k)'''
+		pass
+
+	def __rlshift__(self, obj):
+		'''obj<<k'''
+		pass
+
+	def __rrshift__(self, obj):
+		'''obj>>k'''
+		pass
+
+	def __rand__(self, obj):
+		'''obj&k'''
+		pass
+
+	def __ror__(self, obj):
+		'''obj|k'''
+		pass
+
+	def __rxor__(self, obj):
+		'''obj^k'''
+		pass
+
+
+
+
+	def __iadd__(self, obj):
+		'''k+=obj'''
+		pass
+
+	def __isub__(self, obj):
+		'''k-=obj'''
+		pass
+
+	def __imul__(self, obj):
+		'''k*=obj'''
+		pass
+
+	def __imatmul__(self, obj):
+		'''k@=obj, 矩阵乘法'''
+		pass
+
+	def __itruediv__(self, obj):
+		'''k//=obj'''
+		pass
+
+	def __ifloordiv__(self, obj):
+		'''k/=obj'''
+		pass
+
+	def __imod__(self, obj):
+		'''k%=obj'''
+		pass
+
+	def __divmod__(self, obj):
+		'''divmod(k,obj)'''
+		pass
+
+	def __ipow__(self, obj):
+		'''k**=obj,或者pow(k,obj)'''
+		pass
+
+	def __ilshift__(self, obj):
+		'''k<<=obj'''
+		pass
+
+	def __irshift__(self, obj):
+		'''k>>=obj'''
+		pass
+
+	def __iand__(self, obj):
+		'''k&=obj'''
+		pass
+
+	def __ior__(self, obj):
+		'''k|=obj'''
+		pass
+
+	def __ixor__(self, obj):
+		'''k^=obj'''
+		pass
+
+
+
+
 	def __neg__(self):
-		'''一元负操作符'''
+		'''-k'''
 		pass
 
 	def __pos__(self):
-		'''一元正操作符'''
+		'''+k'''
 		pass
 
 	def __abs__(self):
-		'''内建abs方法,绝对值'''
+		'''abs(k)'''
 		pass
 
 	def __invert__(self):
-		'''取反操作符'''
+		'''~k'''
 		pass
 
-	def __complex__(self, com):
-		'''内建complex方法,转为复数'''
-		pass
+
+
 
 	def __int__(self):
-		'''内建int方法,obj->int'''
+		'''int(k)'''
 		pass
 
-	def __long__(self):
-		'''内建long方法,obj->long'''
+	def __complex__(self):
+		'''complex(k)'''
 		pass
 
 	def __float__(self):
-		'''内建float方法,obj->float'''
+		'''float(k)'''
 		pass
 
-	def __oct__(self):
-		'''内建oct方法,转八进制'''
+	def __bool__(self):
+		'''bool(k), 没有这个方法时会尝试调用__len__判断是否非零'''
 		pass
 
-	def __hex__(self):
-		'''内建hex方法,转十六进制'''
+	def __round__(self):
+		'''round(k)'''
 		pass
+
+	def __bytes__(self):
+		'''bytes(obj)'''
+		pass
+
+	def __format__(self, format_spec):
+		pass#?
+
+
+
 
 	def __coerce__(self, num):
-		#?
+		pass#?
+
+	def __prepare__(self):
+		pass#?
+
+
 
 
 #属性
@@ -267,6 +518,7 @@ __name__#定义时的类名
 __dict__#类可用的属性名和值
 __module__#包含该类的模块名
 __bases__#直接父亲的元组
+__slots__#一个字符串的元组,用来限制该类的实例能拥有的属性
 #对象
 __dict__#对象可用的属性名和值
 __class__#对象所属的类对象
