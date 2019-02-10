@@ -1,16 +1,14 @@
 #jh:func-base,key-type
 import os,sys
 
-#open(name[,mode[,buffer]])
+#open
 #mode默认为r
 #mode有'r'(只读),'w'(只写),'a'(追加),'r+'/'w+'(读写),'a+'(追加+读写)
 #'rb','wb','ab','rb+','wb+','ab+'为二进制的对应模式
 f = open("123.txt", 'r')
 f = open("123.txt", 'w')
-
-#带编码读入
-import codecs
-codecs.open('123.txt', 'w', 'utf-8')
+#带编码读写,默认是平台的默认编码
+f = open("123.txt", 'r', encoding='utf-8') 
 
 #read([size])
 #默认读取全部
@@ -39,10 +37,6 @@ f.writelines(seq)
 
 #close()
 f.close()
-
-#iter(file)
-#迭代器的一个元素是一行
-iter_f = iter(f)
 
 #flush()
 #清空缓存(写)
