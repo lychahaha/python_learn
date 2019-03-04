@@ -117,7 +117,7 @@ a = x.dtype #数据类型
 a = x.type() #张量类型
 a = x.shape
 a = x.size() #shape
-a = torch.numel(x) #size
+a = x.nelement() #size
 a = x.dim() #维数
 a = x.data_ptr() #头指针
 a = x.element_size() #数据类型的字节数
@@ -645,17 +645,28 @@ class XX(torch.autograd.Function):
 
 ###nn.Module
 def forward_hook_fn(module, inputs, outputs):
+    '''
+    inputs: list
+    outputs: tensor/list
+    '''
     #不能修改输入和输出
     #一定要返回None
     return None
 
 def backward_hook_fn(module, grad_inputs, grad_outputs):
+    '''
+    grad_inputs:list
+    grad_outputs:list
+    '''
     #不能修改输入和输出
     #但你可以返回另一个张量作为输入的梯度
     #backward只能作用在model的最后一个Function
     return another_grad_inputs
 
 def forward_per_hook_fn(module, inputs):
+    '''
+    inputs: list
+    '''
     #不能修改输入
     #一定要返回None
     return None
