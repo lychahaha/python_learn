@@ -99,6 +99,7 @@ d 3
 #快速输入命令
 alias #查看所有别名和对应命令
 alias name comd #给该命令命名(以后可以直接用这个name执行命令)
+alias lk array[%1] #带参数的命令(用法是类似lk 3)
 unalias name #取消这个命名
 
 
