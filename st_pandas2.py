@@ -4,32 +4,51 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-s = pd.Series([1,2,3])
-s = pd.Series({'a':3,'b':4,'c':5}) #index->value
 
 s.values
-s.index
-
-s['a']
-
-df = pd.DataFrame(np.ones((4,3)), index=['A','B','C'], columns=['a','b','c'])
-df = pd.DataFrame({
-    'a':[1,2,3],
-    'b':[2,3,4],
-})
-
-df.columns
-df.index
 df.values
 
-df.a
-df['a']
-df.ix['i3']
-df.ix['i3','a']
-df.loc['a','i3']
-df.iloc[2,3]
-df[1:4]
-df[df['a']>3]
+
+#初始化
+##series
+s = pd.Series([1,2,3])
+s = pd.Series({'a':3,'b':4,'c':5}) #index->value
+##np
+df = pd.DataFrame(np.ones((4,3)), index=['A','B','C'], columns=['a','b','c'])
+##dict of "list"
+df = pd.DataFrame({
+    'a':[1,2,3],
+    'b':pd.Series([2,3,4]),
+}, index=['r1','r2','r3'])
+##list of dict
+df = pd.DataFrame([
+    {'c1':1,'c2':2,},
+    {'c1':3,'c2':4,},
+], index=['r1','r2'])
+
+
+#数据合并
+##append
+df3 = df1.append(df2) #按行append
+##concat
+df3 = pd.concat([df1,df2]) #按行concat
+df3 = pd.concat([df1,df2], axis=1) #按列concat
+##merge
+'''
+how: inner|left|right|outer
+on: 默认是两个df的列交集
+left_on,right_on: 左右两个df的连接键分别用不同的名字
+'''
+df3 = pd.merge(df1, df2, how='inner', on=None, left_on=None, right_on=None)
+df3 = pd.merge(df1, df2, on='pid') #经典内连接
+df3 = pd.merge(df1, df2, left_on='pid', right_on='id') #连了之后左右连接键都会保留
+##join
+
+
+#删除
+df2 = df.drop('r1')
+df2 = df.drop(['c1','c2'], axis=1)
+
 
 #索引
 ##loc(行标签(切片/list)/行mask,列标签(切片/list)/列mask)
@@ -53,9 +72,15 @@ df[df.A>0.5]
 #index/columns
 df.index
 df.columns
+##ix->label
+df.index[1]
+df.columns[1]
 ##label->ix
 df.index.get_loc('r1')
 df.columns.get_loc('c1')
+##重命名
+df2 = df.rename(index=lambda x:x+1)
+df2 = df.rename(columns={'old':'new'}) #单独改某列
 
 #load
 df = pd.read_csv('a.csv', sep=',')
@@ -94,6 +119,19 @@ for keys,df2 in gb:
     keys #tuple,放着共同项(c1,c2)
     df2 #df,所有共同项的所有行
 
+#排序
+df2 = df.sort_values('c1')
+df2 = df.sort_values('c1', ascending=False) #降序
+df2 = df.sort_values(['c1','c2'], ascending=[True,False]) #多key
+df2 = df.sort_values('r1', axis=1) #对列排序
+
+
+#info
+df2 = df.head(n) #查看前n行
+df2 = df.tail(n) #查看后n行
+df.info() #查看索引,数据类型,内存等信息
+
+
 #缺失值
 pd.NaT
 np.nan
@@ -111,17 +149,7 @@ df2 = df.fillna(value={'c1':0,'c2':3}) #不同列给不同填充值
 
 
 
-del df['a']
-df2 = df.drop('a', axis=1)
-df2 = df.drop(['i1','i2'])
-
 df2 = df.T
-
-mask = df.isnull()
-mask = df.notnull()
-mask = df.isna()
-df2 = df.dropna(axis=1, how='all')
-df2 = df.fillna(1)
 
 
 
