@@ -1,10 +1,10 @@
 # 外部操作
 tmux [new -s sess_name -n win_name] #创建新会话
 tmux kill-session -t sess_name #删除会话
+tmux rename-session -t old_sess_name new_sess_name #重命名会话
 tmux ls #显示会话列表
 tmux a #连接上一次的会话
 tmux at [-t sess_name] #连接会话
-
 # 会话操作
 cb s #列出所有会话,然后切换
 cb d #退出会话

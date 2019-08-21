@@ -14,7 +14,7 @@ df.values
 s = pd.Series([1,2,3])
 s = pd.Series({'a':3,'b':4,'c':5}) #index->value
 ##np
-df = pd.DataFrame(np.ones((4,3)), index=['A','B','C'], columns=['a','b','c'])
+df = pd.DataFrame(np.ones((4,3)), index=['A','B','C','D'], columns=['a','b','c'])
 ##dict of "list"
 df = pd.DataFrame({
     'a':[1,2,3],
