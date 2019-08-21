@@ -775,6 +775,13 @@ init.orthogonal_(w, gain=1) #?
 init.sparse_(w, sparsity, std=0.01) #?
 
 
+
+#gpu and cuda
+os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,3'
+export CUDA_HOME="/usr/lib/local/cuda-9.1"
+export LD_LIBRARY_PATH="/usr/lib/local/cuda-9.1/lib64"
+
+
 '''
 1.bn的momentum和tf的是反过来的
 2.optim的weight_decay会把所有参数(包括bias)都加上正则项
