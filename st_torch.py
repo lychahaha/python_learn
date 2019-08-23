@@ -778,8 +778,11 @@ init.sparse_(w, sparsity, std=0.01) #?
 
 #gpu and cuda
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,3'
+
 export CUDA_HOME="/usr/lib/local/cuda-9.1"
 export LD_LIBRARY_PATH="/usr/lib/local/cuda-9.1/lib64"
+
+torch.version.cuda
 
 
 '''
