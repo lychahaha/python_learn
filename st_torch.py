@@ -30,7 +30,6 @@ x = F.log_softmax(x)
 
 #训练
 model.train()
-
 output = model(input)
 loss = criterion(output, label)
 opt.zero_grad()
@@ -38,7 +37,6 @@ loss.backward()
 opt.step()
 #测试
 model.eval()
-
 output = model(input)
 
 
@@ -49,8 +47,8 @@ y = torch.unsqueeze(x, dim) #expand_dim
 ys = torch.chunk(x, chunk_size, dim=0) #?
 y = torch.reshape(x, (2,3)) #重新分配内存
 y = x.view(3, 4) #不重新分配内存
-##改变迭代方向
-y = torch.t(x) #0,1维转置
+##转置
+y = x.t() #0,1维转置
 y = torch.transpose(x, dim0, dim1)
 y = x.permute(2,1,0) #多个维度参与的transpose
 ##连接与分割
@@ -96,11 +94,11 @@ y = torch.diag(x, diagonal=0) #矩阵<->对角线,diagonal控制对角线(大于
 
 
 #保存读取
+torch.save(model.state_dict(), 'params.pth.tar') #只保存神经网络的模型参数
+model.load_state_dict(torch.load('params.pth.tar'))
 torch.save(model, 'model.pth.tar') #保存整个神经网络的结构和模型参数
 model = torch.load('model.pth.tar')
 model = torch.load('model.pth.tar', map_location='cpu') #以cpu模式打开
-torch.save(model.state_dict(), 'params.pkl') #只保存神经网络的模型参数
-model_object.load_state_dict(torch.load('params.pkl'))
 
 
 #tensor
@@ -114,13 +112,9 @@ fn = x.grad_fn #梯度函数
 grad = x.grad #梯度
 ##属性
 a = x.dtype #数据类型
-a = x.type() #张量类型
 a = x.shape
-a = x.size() #shape
 a = x.nelement() #size
 a = x.dim() #维数
-a = x.data_ptr() #头指针
-a = x.element_size() #数据类型的字节数
 a = x.requires_grad #是否需要并回传梯度
 a = x.is_leaf #是否是叶子
 a = x.is_contiguous() #是否连续
@@ -322,8 +316,8 @@ a = torch.is_tensor(x)
 
 
 
-x.backward(k)
 x.backward()
+x.backward(k)
 x.backward(retain_graph=True) #保留计算图,不然只能backward一次
 
 
@@ -455,7 +449,8 @@ rnn1 = nn.RNNCell(input_size, hidden_size, bias=True, nonlinearity='tanh')
 rnn1 = nn.LSTMCell(input_size, hidden_size, bias=True)
 rnn1 = nn.GRUCell(input_size, hidden_size, bias=True)
 ###bn
-bn1 = nn.BatchNorm2d(num_features, eps=1e-05, momentum=0.1, affine=True)
+bn1 = nn.BatchNorm1d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+bn1 = nn.BatchNorm2d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
 ###dropout
 nn.Dropout(p=0.5) #drop_rate
 nn.Dropout2d(p=0.5) #整个通道置0
