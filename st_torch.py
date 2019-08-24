@@ -1,16 +1,19 @@
 import torch
-import torch.autograd as autograd 
-from torch.nn.parameter import Parameter
+
 import torch.nn as nn
+from torch.nn.parameter import Parameter
 import torch.nn.functional as F
 import torch.nn.init as init
-from torch.backends import cudnn
-import torch.utils.data as data
+
+import torch.autograd as autograd 
 import torch.optim as optim
+import torch.utils.data as data
+
 import torchvision
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import torchvision.models as models
+
 from collections import OrderedDict
 
 #层定义
@@ -51,6 +54,7 @@ y = x.view(3, 4) #不重新分配内存
 y = x.t() #0,1维转置
 y = torch.transpose(x, dim0, dim1)
 y = x.permute(2,1,0) #多个维度参与的transpose
+y = x.T #维度完全翻转,如(2,3,5)->(5,3,2)
 ##连接与分割
 x = torch.cat(inputs, dim=0) #concat
 y = torch.stack(inputs, dim=0)
@@ -114,7 +118,7 @@ grad = x.grad #梯度
 a = x.dtype #数据类型
 a = x.shape
 a = x.nelement() #size
-a = x.dim() #维数
+a = x.ndim #维数
 a = x.requires_grad #是否需要并回传梯度
 a = x.is_leaf #是否是叶子
 a = x.is_contiguous() #是否连续
@@ -179,6 +183,7 @@ x = x.tolist() #变成python的list
 #cuda
 a = torch.cuda.is_available() #是否能用gpu
 a = torch.cuda.device_count()
+torch.cuda.empty_cache() #清空缓存
 torch.cuda.device(1) #切换到gpu-1
 model = nn.DataParallel(model) #多GPU
 #cpu
@@ -240,7 +245,7 @@ z = torch.fmod(x, y)
 z = torch.remainder(x, y)
 y = torch.neg(x)
 z = torch.pow(x, y)
-##?
+##组合四则运算
 x = torch.addcdiv(t, v, t1, t2) #t+v*(t1/t2) (v是标量)
 x = torch.addcmul(t, v, t1, t2) #t+v*(t1*t2)
 ##特殊
@@ -449,14 +454,14 @@ rnn1 = nn.RNNCell(input_size, hidden_size, bias=True, nonlinearity='tanh')
 rnn1 = nn.LSTMCell(input_size, hidden_size, bias=True)
 rnn1 = nn.GRUCell(input_size, hidden_size, bias=True)
 ###bn
-bn1 = nn.BatchNorm1d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+bn1 = nn.BatchNorm1d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True) #affine为false则去掉参数,track_running_stats为false则去掉buffer,永远算当前的均值和方差
 bn1 = nn.BatchNorm2d(num_features, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
 ###dropout
 nn.Dropout(p=0.5) #drop_rate
 nn.Dropout2d(p=0.5) #整个通道置0
-###p范数
-dist = nn.PairwiseDistance(p=2, eps=1e-6)
-y = dist(x)
+###dist
+dist = nn.PairwiseDistance(p=2, eps=1e-6, keepdim=False) #p=2就是欧氏距离
+dist = nn.CosineSimilarity(dim=1, eps=1e-8)
 ###激活函数
 nn.ReLU()
 nn.ReLU6() #clip(x,0,6)
@@ -474,6 +479,12 @@ nn.Tanhshrink() #x-tanh(x)
 nn.Softmin() #yi=e(-xi)/(sum_e(-xj))
 nn.Softmax() #yi=e(xi)/(sum_e(xj))
 nn.LogSoftmax() #log(softmax(x))
+##detection
+torchvision.ops.RoIPool(output_size, spatial_scale)
+torchvision.ops.RoIAlign(output_size, spatial_scale, sampling_ratio)
+##im2col
+nn.Unfold(kernel_size, dilation=1, padding=0, stride=1) #im2col
+nn.Fold(output_size, kernel_size, dilation=1, padding=0, stride=1) #col2im
 
 
 ##序列(为了把多个module合成一个调用)(参数是*args,或者是有序dict)
@@ -502,7 +513,7 @@ y0 = blocks['conv0'](x0)
 y1 = blocks['conv1'](x1)
 ##多parameter情况
 params = nn.ParameterList([p1,p2,p3])
-
+params = nn.ParameterDict({'a':p1,'b':p2})
 
 ##自定义module
 class MyNet(nn.Module):
@@ -526,7 +537,8 @@ class MyNet(nn.Module):
 一个有序字典,name->所有子孙module的parameter和buffer
 '''
 model.state_dict(destination=None, prefix='', keep_vars=False)#prefix是前缀
-model.load_state_dict(state_dict, strict=True) #有(不匹配,漏了,多了)的情况会抛出异常
+model.load_state_dict(state_dict)
+model.load_state_dict(state_dict, strict=False) #有(漏了,多了)的情况不报错,而是返回一个列表
 ###参数生成器
 model.parameters(recurse=True) #生成(p)
 model.named_parameters(prefix='', recurse=True) #生成(name,p)
@@ -557,6 +569,8 @@ model.apply(fn)
 
 
 #function
+##全连接层
+y = F.linear(x, w, bias=None)
 ##conv
 y = F.conv2d(x, w, bias=None, stride=1, padding=0, dilation=1, groups=1)
 y = F.conv_transpose2d(x, w, bias=None, stride=1, padding=0, output_padding=0, groups=1)
@@ -567,14 +581,21 @@ y = F.max_unpool2d(x, indices, kernel_size, stride=None, padding=0, output_size=
 y = F.lp_pool2d(x, norm_type, kernel_size, stride=None, ceil_mode=False)
 y = F.adaptive_max_pool2d(x, output_size, return_indices=False)
 y = F.adaptive_avg_pool2d(x, output_size)
+##bn
+y = F.batch_norm(x, running_mean, running_var, weight=None, bias=None, training=False, momentum=0.1, eps=1e-05)
+##dropout
+y = F.dropout(x, p=0.5, training=False, inplace=False)
+##dist
+y = F.pairwise_distance(x1, x2, p=2, eps=1e-6)
+y = F.cosine_similarity(x1, x2, dim=1, eps=1e-8)
 ##激活函数
 ###relu
 y = F.relu(x, inplace=False)
 y = F.relu6(x, inplace=False)
-y = F.prelu(x, w)
-y = F.rrelu(x, lower=0.125, upper=0.3333333333333333, training=False, inplace=False)
 y = F.elu(x, alpha=1.0, inplace=False)
+y = F.prelu(x, w)
 y = F.leaky_relu(x, negative_slope=0.01, inplace=False)
+y = F.rrelu(x, lower=0.125, upper=0.3333333333333333, training=False, inplace=False)
 ###softmax
 y = F.softmax(x)
 y = F.log_softmax(x)
@@ -590,14 +611,6 @@ y = F.softplus(x, beta=1, threshold=20)
 y = F.softmin(x)
 y = F.softshrink(x, lambd=0.5)
 y = F.tanh(x)
-##bn
-y = F.batch_norm(x, running_mean, running_var, weight=None, bias=None, training=False, momentum=0.1, eps=1e-05)
-##全连接层
-y = F.linear(x, w, bias=None)
-##dropout
-y = F.dropout(x, p=0.5, training=False, inplace=False)
-##dist
-y = F.pairwise_distance(x1, x2, p=2, eps=1e-6)
 ##loss
 y = F.nll_loss(x, target, weight=None, reduction='elementwise_mean')
 y = F.kl_div(x, target, reduction='elementwise_mean')
@@ -607,6 +620,22 @@ y = F.smooth_l1_loss(x, target, reduction='elementwise_mean')
 y = F.pad(x, pad, mode='constant', value=0)
 ##正则
 y = F.normalize(x, p=2, dim=1, eps=1e-12) #除以p范数
+##detection
+torchvision.ops.nms(boxes, scores, iou_threshold)
+torchvision.ops.roi_pool(input, boxes, output_size, spatial_scale=1.0)
+torchvision.ops.roi_align(input, boxes, output_size, spatial_scale=1.0, sampling_ratio=-1)
+##im2col
+x_col = F.Unfold(x, kernel_size, dilation=1, padding=0, stride=1) #im2col
+x = F.Fold(x_col, output_size, kernel_size, dilation=1, padding=0, stride=1) #col2im
+'''
+#实现卷积
+x = torch.randn(64,3,28,28)
+w = torch.randn(20,3,5,5)
+x_col = F.unfold(x,(5,5))
+y_col = x_col.transpose(1,2).matmul(w.view(w.shape[0],-1).t()).transpose(1,2)
+y = F.fold(y_col, (24,24), (1,1))
+'''
+
 
 ##自定义函数
 '''
@@ -620,7 +649,7 @@ class MyReLU(torch.autograd.Function):
 
     @staticmethod
     def backward(ctx, grad_output):
-        input, =ctx.saved_tensors
+        input, = ctx.saved_tensors
         grad_input = grad_output.clone()
         grad_input[input<0] = 0
         return grad_input
@@ -686,51 +715,64 @@ mytransform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(mean=(0.5,0.5,0.5), std=(0.5,0.5,0.5)),
 ])
-##裁剪
+
+##针对PIL图像
+###裁剪
 t = transforms.CenterCrop(size) #size是int或者(int,int)
 t = transforms.RandomCrop(size, padding=0)
 t = transforms.RandomSizedCrop(size, interpolation=2) #随机切+resize
-##扩充
+###扩充
 t = transforms.Pad(padding, fill=0) #padding是int或者(int,int),或者(int)*4
-##resize
+###resize
 t = transforms.Resize(size, interpolation=2) #interpolation是resize的方法
-##翻转
+###翻转
 t = transforms.RandomHorizontalFlip()
 t = transforms.RandomVerticalFlip()
+###光照
+t = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0) #随机改变亮度,对比度,饱和度,色调
+###颜色空间
+t = transforms.Grayscale(num_output_channels=1) #变成灰度图,参数是1或3(r=g=b)
+t = transforms.RandomGrayscale(p=0.1) #变成灰度图时随机扰动
+
+##针对tensor
+###变换
+t = transforms.Normalize(mean, std) #mean和std是一维数组
+
 ##转换
 t = transforms.ToTensor() #[0,255]->[0,1],[h,w,c]->[c,h,w]
 t = transforms.ToPILImage()
-##变换
-t = transforms.Normalize(mean, std) #mean和std是一维数组
-##光照
-t = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0) #随机改变亮度,对比度,饱和度,色调
-##颜色空间
-t = transforms.Grayscale(num_output_channels=1) #变成灰度图,参数是1或3(r=g=b)
-t = transforms.RandomGrayscale(p=0.1) #变成灰度图时随机扰动
-##通用
+
+##tensor和PIL图像通用
 t = transforms.Lambda(lambd)
 
 
 #models
-alexnet = models.alexnet(pretrained=False)
-vggnet = models.vgg16() #11,13,16,19
-inception = models.inception_v3()
-resnet18 = models.resnet18() #18,34,50,101,152
-squeezenet = models.squeezenet1_0() #1.0,1.1
-densenet = models.densenet_161() #121,161,169,201
+#pretrained是都有的参数
+model = models.alexnet(pretrained=False)
+model = models.vgg16() #11,13,16,19
+model = models.vgg16_bn() #11,13,16,19
+model = models.googlenet(aux_logits=False)
+model = models.inception_v3(aux_logits=False)
+model = models.resnet18() #18,34,50,101,152
+model = models.resnext50_32x4d() #(50,32,4),(101,32,8)
+model = models.wide_resnet50_2() #(50,101)
+model = models.densenet_161(memory_efficient=False) #121,161,169,201
+
+model = models.squeezenet1_0() #1.0,1.1
+model = models.mobilenet_v2()
+model = models.shufflenet_v2_x0_5() #0.5,1.0,1.5,2.0
+model = models.mnasnet0_5() #0.5,0.75,1.0,1.3
+
+model = models.detection.fasterrcnn_resnet50_fpn(num_classes=91, pretrained_backbone=True)
+model = models.detection.maskrcnn_resnet50_fpn(num_classes=91, pretrained_backbone=True)
+model = models.detection.keypointrcnn_resnet50_fpn(num_classes=91, pretrained_backbone=True)
+
+model = models.segmentation.fcn_resnet50(num_classes=21) #50,101
+model = models.segmentation.deeplabv3_resnet50(num_classes=21) #50,101
 
 
 #dataset
-##网上数据集
-mnist_train = datasets.MNIST(root, train=True, transform=None, target_transform=None, download=False)
-datasets.CocoCaptions(root="dir where images are", annFile="json annotation file", [transform, target_transform])
-datasets.CocoDetection(root="dir where images are", annFile="json annotation file", [transform, target_transform])
-datasets.LSUN(db_path, classes='train', [transform, target_transform])
-datasets.CIFAR10(root, train=True, transform=None, target_transform=None, download=False)
-datasets.CIFAR100(root, train=True, transform=None, target_transform=None, download=False)
-datasets.STL10(root, split='train', transform=None, target_transform=None, download=False)
-##来自文件夹
-datasets.ImageFolder(root="root folder path", [transform, target_transform])
+
 ##自定义
 class MyDataset(data.Dataset):
     def __init__(self):
@@ -742,11 +784,53 @@ class MyDataset(data.Dataset):
     def __len__(self):
         pass
 
+##数据集拼接
+data.ConcatDataset([d1,d2,d3]) 
+##数据集子集
+data.Subset(dataset, indices) #indices是保留的ix
+##k折划分
+d1,d2,d3 = data.random_split(dataset, 3)
+
+##来自tensor
+data.TensorDataset(x, y, z) #tensor的第0维是样本维度
+##来自文件夹
+###图片文件夹
+datasets.ImageFolder(root, transform=None, target_transform=None)
+'''
+root文件夹结构:
+root/dog/xxx.png
+root/dog/xxy.png
+
+root/cat/123.png
+root/cat/nsdf3.png
+'''
+###一般文件夹
+datasets.DatasetFolder(root, loader, extensions=None, transform=None, target_transform=None)
+'''
+loader是一个输入路径读入数据并返回的函数
+extensions是一个存放合法文件扩展名的列表,如['jpg','png']
+'''
+
+##网上数据集
+##transform,target_transform,download是都有的参数
+datasets.MNIST(root, train=True, transform=None, target_transform=None, download=False)
+datasets.CIFAR10(root, train=True)
+datasets.CIFAR100(root, train=True)
+
+datasets.STL10(root, split='train')
+datasets.SVHN(root, split='train')
+datasets.ImageNet(root, split='train')
+
+datasets.CocoDetection(root, annFile)
+datasets.CocoCaptions(root, annFile)
+datasets.VOCDetection(root, year='2012', image_set='train')
+datasets.VOCSegmentation(root, year='2012', image_set='train')
+
 
 #dataloader
 '''
 sampler:提取样本的策略,如果有则忽略shuffle参数
-collate_fn:?
+collate_fn:样本聚合成batch的函数
 pin_memory:是否自动将数据拷贝到cuda上
 drop_last:如果batch不整除,则删掉最后一个
 '''
@@ -754,6 +838,12 @@ loader = data.DataLoader(dataset, batch_size=1, shuffle=False, sampler=None, num
 train_loader = data.DataLoader(mnist_train, batch_size=16, shuffle=False, num_workers=2)
 for i,data in enumerate(train_loader):
     print(data)
+
+#sampler
+sampler = data.SequentialSampler(dataset) #顺序
+sampler = data.RandomSampler(dataset) #随机
+
+
 
 
 #init
@@ -778,6 +868,18 @@ export CUDA_HOME="/usr/lib/local/cuda-9.1"
 export LD_LIBRARY_PATH="/usr/lib/local/cuda-9.1/lib64"
 
 torch.version.cuda
+
+
+#图片格子可视化
+'''
+tensor是4d tensor(B,3,H,W)或一个list的3d tensor
+padding控制图片边距
+
+返回值是3d tensor(3,H,W)
+'''
+tensor = torchvision.utils.make_grid(tensor, nrow=8, padding=2, normalize=False, range=None, scale_each=False, pad_value=0)
+#处理并把图片保存下来
+torchvision.utils.save_image(tensor, filename, nrow=8, padding=2, normalize=False, range=None, scale_each=False, pad_value=0)
 
 
 '''
