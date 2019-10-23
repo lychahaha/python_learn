@@ -68,15 +68,23 @@
     kill xxx
 
 #硬盘
-    mount #显示当前挂载的设备列表
-
-    df #查看磁盘使用情况
+    df #查看磁盘分区使用情况(挂载情况)
         -h #动态地以KMGT等为单位
 
     du #显示当前目录的所有子目录的存储占用
         -h #动态地以KMGT等为单位
 
     du -sh #查看当前目录的存储占用
+    
+    mount #显示当前挂载的设备列表
+
+    fdisk -l #查看物理硬盘情况
+
+    mount /dev/sdc1 /aaa #将分区挂载到某目录下(这个目录需要原本存在)
+    umount /dev/sdc1 #通过硬盘分区卸载
+    umount /aaa #也可以通过挂载目录卸载
+
+    mkfs.ext4 /dev/sdc1 #格式化分区
 
 #数据处理
     sort xxx #以行为单位,按字典序排序
