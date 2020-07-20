@@ -189,6 +189,9 @@ git log a.txt
 ## 筛选出与某句代码有关的commit
 git log -S "xxx"
 git log -G "xxx" #正则表达式
+## 一种网上好看的写法
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
 
 # reflog
 git reflog
