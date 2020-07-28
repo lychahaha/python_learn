@@ -34,6 +34,13 @@ Host gpuname
     IdentitiesOnly yes
     ProxyCommand C:\Windows\System32\OpenSSH\ssh.exe jumpname nc %h %p %r
 
+Host gpuname_linux
+    HostName 192.168.1.2
+    Port 22
+    User username
+    IdentityFile ~/.ssh/id_rsa
+    ProxyCommand ssh jumpname -W %h:%p
+
 
 ## 快速ssh
 ssh jumpname
