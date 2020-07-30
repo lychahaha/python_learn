@@ -79,11 +79,19 @@ pool = multiprocessing.Pool(processes=10)
 ##分配任务
 pool.apply_async(func, (a,b,c)) #非阻塞
 pool.apply(func, (a,b,c)) #进程运行完才返回
-ret = pool.map(func, ((a1,b1),(a2,b2))) #类似map
 ##结束
 pool.close() #不再运行新进程
 pool.join() #要在close后调用
 pool.terminate() #kill
+##map(都不需要手动join)
+ret = pool.map(func, (args1,args2)) #阻塞(要求func参数只有一个)
+ret = pool.map_async(func, (args1,args2)) #异步,需要join
+for y in pool.imap(func, xs): #非阻塞,但保证顺序
+	pass
+for y in pool.imap_unordered(func, xs): #非阻塞,并且不保证顺序
+	pass
+ret = pool.starmap(func, ((a1,b1),(a2,b2))) #要求func参数有多个
+ret = pool.starmap_async(func, ((a1,b1),(a2,b2))) #starmap的异步版本
 
 
 #事件event
