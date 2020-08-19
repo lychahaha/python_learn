@@ -55,6 +55,10 @@ git remote add origin git@github.com:xxx/xxx.git
 
 # clone
 git clone git@github.com:xxx/xxx.git
+git clone -b dev git@github.com:xxx/xxx.git #clone指定分支
+git clone --depth 1 git@github.com:xxx/xxx.git #指定拷贝的历史节点数
+
+
 
 # checkout
 ## 切换当前分支
