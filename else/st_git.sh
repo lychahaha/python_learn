@@ -16,7 +16,10 @@ git init
 git add a.txt
 git add *
 git add .
-git rm a.txt
+
+# rm
+git rm a.txt #本地和暂存区都删掉
+git rm --cached a.txt #只是暂存区删掉
 
 # checkout(文件)
 ## 暂存区->工作区,如果暂存区为空就是当前版本
@@ -63,7 +66,7 @@ git clone --depth 1 git@github.com:xxx/xxx.git #指定拷贝的历史节点数
 # checkout
 ## 切换当前分支
 git checkout dev
-## 创建并切换
+## 创建并切换  
 git checkout -b dev
 ## 从远程仓库拉取本地没有的分支
 git checkout -b dev origin/dev
