@@ -18,3 +18,8 @@ adb shell screencap -p # 输出到标准输出(二进制码)
 
 # 执行linux命令
 adb shell {cmd}
+
+# 传数据
+adb pull /sdcard/a.txt e:/test #手机->电脑
+adb push e:/test/a.txt /sdcard #电脑->手机
+
