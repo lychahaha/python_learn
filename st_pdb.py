@@ -7,7 +7,8 @@ pdb.set_trace()
 pdb.runcall(fx, args)
 #开始就停下来
 python -m pdb xx.py
-
+#交互模式出错后进入pdb调试模式
+pdb.pm()
 
 #帮助(help)
 h
