@@ -44,6 +44,8 @@ git push --set-upstream origin dev #创建新分支,第一次push上去
 ## 删除远程分支
 git push origin :master
 git push origin --delete master
+## 强制回滚远程仓库
+git push -f
 
 # pull
 git pull
