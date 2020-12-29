@@ -30,9 +30,11 @@ git checkout -- a.txt
 git commit -m "modify a.txt"
 
 # reset
-git reset --hard HEAD^
 ## 版本库->暂存区
-git reset HEAD a.txt
+git reset 2133a
+git reset 2133a a.txt #只reset某个文件
+## 版本库->暂存区,工作区
+git reset --hard HEAD^
 
 # push
 git push #将当前分支推送到默认主机
