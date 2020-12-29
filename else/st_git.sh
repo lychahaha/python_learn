@@ -109,7 +109,8 @@ git status
 ## 对比工作区和暂存区的差别(暂存区没东西则相当于暂存区是HEAD)
 git diff
 ## 对比工作区和版本库的差别
-git diff HEAD^
+git diff HEAD #当前版本
+git diff HEAD^ #上一版本
 ## 对比暂存区和版本库的差别
 git diff --cached #当前版本
 git diff HEAD^ --cached
