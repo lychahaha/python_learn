@@ -861,6 +861,15 @@ init.sparse_(w, sparsity, std=0.01) #?
 
 
 
+#checkpoint
+## 以时间换空间
+## func里的所有中间变量不会被保存, backward的时候会重新计算
+def func(x1, x2, k1=None, k2=None):
+    return k1*x1+k2*x2
+x1 = torch.utils.checkpoint.checkpoint(func, x1, x2, k1=k1, k2=k2)
+
+
+
 #gpu and cuda
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,3'
 

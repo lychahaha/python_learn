@@ -7,7 +7,11 @@ pip uninstall x
 pip install x -i https://pypi.tuna.tsinghua.edu.cn/simple 
 #全局设置源
 '''
+Linux:
 ~/.pip/pip.conf
+
+Windows:
+C:\Users\lychahaha\AppData\Roaming\pip\pip.ini
 
 [global]
 index-url = https://pypi.tuna.tsinghua.edu.cn/simple

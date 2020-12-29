@@ -1,28 +1,75 @@
 #jh:func-base,key-type
+import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
 
-plt.show()
+fig,ax = plt.subplots()
 
-#plot
-#返回值是list of line
-plt.plot(xvals, yvals)#画
-plt.plot(yvals)#xvals默认为[0,1,2...]
-plt.plot(xvals, yvals, s)#设置样式
+# 折线图,直方图,柱状图,饼状图,散点图,图片
+ax.plot(xs, ys)
+ax.hist(vals, bins=100)
+ax.bar(xs, heights)
+ax.pie(vals, labels=labels)
+ax.scatter(xs, ys)
+ax.imshow(img)
+
+ax.set_title('title')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.legend()
+
+ax.set_xlim(0, 3)
+ax.set_ylim(1, 4)
+ax.set_xticks([-2,0,2])
+ax.set_yticks([-1,0,1])
+ax.set_xticklabels(['2006','2008','2010'])
+ax.set_yticklabels(['low','medium','high'])
+ax.set_aspect('equal')
+ax.set_yscale('log')
+ax.grid()
+
+plt.show()
+fig.savefig('a.png')
+
+
+
+# figure, ax
+# figure是一个图, ax是figure里的一个子图
+# 一次show可以创建多个窗口, 一个窗口就是一个figure
+# 一个figure里包含多个ax
+# 一个ax里包含多条曲线,或其他东西
+
+
+#  创建ax
+## 当row和col都是1时, 返回一个ax对象
+## 当row和col一个大于1, 一个等于1时, 返回一个ax的np一维数组
+## 当row和col都大于1时, 返回一个ax的np二维数组
+fig,ax = plt.subplots() #row和col的默认值是1
+fig,axes = plt.subplots(2,1) #2行1列, 共2个ax
+fig,axes = plt.subplots(2,3) #2行3列, 共6个ax
+
+
+# plot(折线图)
+## 返回值是list of line, 一般情况是list里只有一个line对象
+ax.plot(xvals, yvals) #画
+ax.plot(yvals) #xvals默认为[0,1,2...]
+ax.plot(x1, y1, 'r', x2, y2, 'b') #多条线段一起画
+ax.plot(xvals, yvals, label='line1') #设置图例里该线的标题
+ax.plot(xvals, yvals, s) #设置样式
 '''
 #不同类型样式可以组合,比如'ro'
 #颜色
-b:blue,g:green,r:red,c:cyan,m:magenta,y:yellow,k:black,w:white
+    b:blue,g:green,r:red,c:cyan,m:magenta,y:yellow,k:black,w:white
 #线条
-'-':solid实线,'--':虚线,'-.':虚线+点,':':点,' ':不画
+    '-':solid实线,'--':虚线,'-.':虚线+点,':':点,' ':不画
 #描点
-'.':点,',':像素点,'o':圆,'s':正方形,'+':加号,'x':x形,'*':星形
-'v','^','<','>':不同方向的三角形,'1','2','3','4':不同方向的菱角
-'p':五边形,'h':竖六边形,'H':横六边形,'D':菱形,'d':尖菱形
-'_','|':横竖的线
+    '.':点,',':像素点,'o':圆,'s':正方形,'+':加号,'x':x形,'*':星形
+    'v','^','<','>':不同方向的三角形,'1','2','3','4':不同方向的菱角
+    'p':五边形,'h':竖六边形,'H':横六边形,'D':菱形,'d':尖菱形
+    '_','|':横竖的线
 '''
-plt.plot(x1, y1, 'r', x2, y2, 'b')#多条线段一起画
-plt.plot(**kw)#各种各样的参数
+
+ax.plot(**kw) #各种各样的参数
 '''
 alpha:float,透明度
 animated:bool?
@@ -63,15 +110,16 @@ ydata:1D array,?
 zorder:?
 '''
 
-#hist
-#返回值是(cnts,intervals,Patches)
-#含义是每个区间的数目,区间的分界线(比区间数多1),每个区间的Patch对象
-#如果有多个数据,则第一个返回值是list(cnts),第三个返回值是list(Patches)
-plt.hist(data)#直方图,data是一维数组
-plt.hist([data1,data2])#画多个数据的直方图
-plt.hist(data, bins=50)#设置区间数
-plt.hist(data, bins=list)#设置区间的分界线
-#其他参数
+
+# hist(直方图)
+## 返回值是(cnts,intervals,Patches)
+## 含义是每个区间的数目,区间的分界线(比区间数多1),每个区间的Patch对象
+## 如果有多个数据,则第一个返回值是list(cnts),第三个返回值是list(Patches)
+ax.hist(data) #直方图,data是一维数组
+ax.hist([data1,data2]) #画多个数据的直方图
+ax.hist(data, bins=50) #设置区间数
+ax.hist(data, bins=list) #设置区间的分界线
+## 其他参数
 '''
 range:(xmin,xmax),设置区间边界(bins为区间分界线时无效)
 normed:bool,设置是否归一化(归一化后sum(区间cnt*区间长度)==1)
@@ -87,13 +135,104 @@ color:柱状图的颜色
 label:
 stacked:bool,是否堆叠,效果和'barstacked'一样,但histtype可以设置成'step'使得效果叠加
 '''
-#kw(Patch需要的参数)
+## kw(Patch需要的参数)
 
-#axis
-#返回值是[xmin,xmax,ymin,ymax]
-plt.axis()#为了得到[xmin,xmax,ymin,ymax]
-plt.axis([xmin,xmax,ymin,ymax])#设置这些属性
-plt.axis(s)#设置样式
+
+# bar(柱状图)
+ax.bar(xs, heights)
+ax.bar([0,1,2], [15,10,20], width=0.5, color='black', align='edge', label='bar', tick_label=['a','b','c'])
+## 水平柱状图
+### x变成bottom(y), height变成width
+ax.bar(x=0, bottom=[0,1,2], height=0.5, width=[15,10,20], orientation='horizontal')
+### 另一个api
+ax.barh([0,1,2], [15,10,20], height=0.5)
+## 画多个柱状图
+### 主要是对齐问题
+ax.bar(np.arange(3)-0.3, [5,3,2], width=0.3, align='edge')
+ax.bar(np.arange(3), [1,4,6], width=0.3, align='edge')
+## 叠加柱状图
+ax.bar([0,1,2], h1)
+ax.bar([0,1,2], h2, bottom=h1)
+## 在柱子顶部添加数据
+### 使用ax.text暴力实现
+for a, b in zip(x, heights):
+    plt.text(a, b + 0.05, '%.0f' % b, ha='center', va='bottom', fontsize=10)
+'''
+bottom: float|list[float], 柱子底部起点, 默认是0
+width: float|list[float], 柱子的宽度, 默认0.8
+color: color, 柱子的颜色
+edgecolor: color, 柱子边缘的颜色
+align: 'center'(默认)|'edge', 设置x坐标是柱子的中心或左端点
+label: str, 设置图例里的名字
+tick_label: list[str], x坐标替换成自定义的文字
+'''
+
+
+# pie(饼状图)
+ax.pie([2,3,4], labels=['CN','KR','JP']) #[2,3,4]是比例
+ax.pie([2,3,4], labels['C','K','J'], colors=['r','g','b'], explode=[0.2,0,0.1], autopct='%.1f%%', pctdistance=0.8, shadow=True)
+'''
+colors: list[color], 每种饼的颜色
+explode: list[float], 每种饼离中心的距离(0~1)
+autopct: format str, 如'%.1f%%', 有这个参数则打印出每个饼的比例
+pctdistance: float, 每种饼的比例文字离中心的距离(0~1)
+shadow:bool, 是否加阴影, 显得更立体
+center: (float,float), 设置饼的圆心坐标
+radius: float, 饼的半径
+startangle: float(0~360), 设置角度起点, 默认0度是3点钟方向, 逆时针
+frame: bool, 是否画坐标轴和框之类的,默认False
+'''
+
+
+# scatter(散点图)
+ax.scatter(xvals, yvals)
+ax.scatter(xvals, yvals, s=sizes, c=colors, edgecolor='black')
+'''
+s: list[float], 每个点画出来的圆的面积
+c: list[color], 每个点的颜色
+edgecolor: 每个点的边缘颜色
+'''
+
+
+# image(图片)
+ax.imshow(img)
+'''
+img: np数组(h,w)|(h,w,3)|(h,w,4), float|uint8
+'''
+
+
+# title,xlabel,ylabel
+## 返回值是Text对象
+ax.set_title(s)
+ax.set_xlabel(s)
+ax.set_ylabel(s)
+ax.set_title(s, fontdict=None) #参考plt.text
+ax.set_title(s, loc='center') #标题对齐,'center'|'left'|'right'
+
+
+# legend
+## 返回值是Legend对象
+plt.legend() #设置显示图例
+plt.legend([line1,line2], ['one','two']) #对某些对象设置图例
+plt.legend(loc='upper left') #设置显示位置
+'''
+loc:'best','right','center','upper left','lower right','center right','left center'等等的各种组合
+'''
+
+
+# xlim,ylim
+## 返回值是(min,max)
+ax.set_xlim() #返回[xmin,xmax]
+ax.set_xlim([xmin,xmax]) #设置xmin和xmax
+ax.set_xlim(xmin, xmax)
+ax.set_xlim(xmin=xmin)
+ax.set_xlim(xmax=xmax)
+ax.set_ylim([ymin,ymax])
+# axis
+## 返回值是[xmin,xmax,ymin,ymax]
+ax.axis() #为了得到[xmin,xmax,ymin,ymax]
+ax.axis([xmin,xmax,ymin,ymax]) #设置这些属性
+ax.axis(s) #设置样式
 '''
 'off':去掉坐标轴
 'equal':使x轴和y轴比例尺一样
@@ -103,41 +242,107 @@ plt.axis(s)#设置样式
 'square':使比例尺和轴的总长度都一样
 '''
 
-#xlim,ylim
-#返回值是(min,max)
-plt.xlim()#返回[xmin,xmax]
-plt.xlim([xmin,xmax])#设置xmin和xmax
-plt.xlim(xmin, xmax)
-plt.xlim(xmin=xmin)
-plt.xlim(xmax=xmax)
-plt.ylim([ymin,ymax])
 
-#xlabel,ylabel
-#返回值是Text对象
-plt.xlabel(s)#设置x轴的标签
-plt.xlabel(s, fontdict=None)#参考plt.text
-plt.ylabel(s)
+# tick
+## 设置要显示的刻度
+ax.set_xticks([-1,0,1]) 
+ax.set_yticks([-1,0,1])
+## 设置刻度的内容
+ax.set_xticklabels(['a','b'])
+ax.set_yticklabels(['a','b'])
 
-#text
-#返回值是Text对象
-#字体不能影响轴的lim
-plt.text(x, y, s)
-plt.text(x, y, s, withdash=False)#?
-plt.text(x, y, s, fontdict=None)#通过字典设置字体
-plt.text(x, y, s, fontsize=12)#字典中的各种属性也可以直接放在参数表上
+
+# aspect
+## 设置y单位向量与x单位向量的比例
+ax.set_aspect('equal')
 '''
+aspect: 'auto'(默认)|'equal'|float
 '''
 
-#setp
-plt.setp(line, color='r', linewidth=2.0)#设置属性
-plt.setp(line, 'color', 'r', 'linewidth', 2.0)#matlab参数形式
-plt.setp(lines, color='r')#设置多条线段
 
-#title
-#返回值是Text对象
-plt.title(s)#设置标题
-plt.title(s, fontdict=None)#参考plt.text
-plt.title(s, loc='center')#标题对齐,'center'|'left'|'right'
+# xscale,yscale
+plt.xscale('log')#改变坐标轴的量化
+plt.yscale('log')
+#scale(不同的scale可以使用不同的参数)
+'''
+'linear'(线性,默认)
+
+'log'(对数)
+{
+    basex,basey:?
+    nonposx,nonposy:'mask'|'clip',?
+    subsx,subsy:?
+}
+
+'logit'(对数0到1)
+{
+    nonpos:'mask'|'clip',?
+}
+
+'symlog'(有负的对数)
+{
+    basex,basey:?
+    linthreshx,linthreshy:?
+    subsx,subsy:?
+    linscalex,linscaley:?
+}
+'''
+
+
+# grid
+ax.grid(True) #设置显示坐标网格
+## 各种参数
+'''
+which:'major'(默认)|'minor'|'both',?
+axis:'both'(默认)|'x'|'y',哪个轴画网线
+'''
+## kw,参考plot中的kw
+
+
+# save
+fig.savefig('a.png')
+
+
+
+
+
+
+# text(文字)
+## 返回值是Text对象
+## 字体不能影响轴的lim
+ax.text(x, y, s)
+ax.text(x, y, s, withdash=False)#?
+ax.text(x, y, s, fontdict=None)#通过字典设置字体
+ax.text(x, y, s, fontsize=12)#字典中的各种属性也可以直接放在参数表上
+
+
+# annotate(箭头)
+## 返回值是Annotation对象
+ax.annotate('text', xy=(2,3), xytext=(4,6), arrowprops=dict(facecolor='black',shrink=0.05))
+## 参数
+'''
+xy:(x,y),箭头尖尖的坐标
+xytext:(x,y),文字坐标(箭头底部坐标),不提供则把文字画在xy处,此时箭头会变成一个三角标
+arrowprops:dict,箭头属性,不提供则不画箭头
+{
+    facecolor:箭头颜色
+    width:箭头身体宽度
+    headwidth:箭头尖尖宽度
+    headlength:箭头尖尖长度
+    shrink:不画的比例,就是箭头实际底部与xytext的距离占xy到xytext的比例
+    ?:还有
+}
+xycoords:?
+textcoords:?
+annotation_clip:bool,如果true,则xy在原本的区域里才会被画,默认None,当xycoords=='data'时认为是true
+'''
+
+
+#中文问题
+matplotlib.rcParams['font.sans-serif'] = ['SimHei']
+matplotlib.rcParams['axes.unicode_minus'] = False
+
+
 
 #figure
 #返回值是Figure对象
@@ -169,77 +374,12 @@ projection:str,?
 plt.subplot2grid((3,3), (0,0), colspan=2, rowspan=2)#多行多列的子图
 plt.subplot2grid((2,2), (0,0))#相当于plt.subplot(2,2,1)
 
-#grid
-plt.grid(True)#设置显示坐标网格
-#各种参数
-'''
-which:'major'(默认)|'minor'|'both',?
-axis:'both'(默认)|'x'|'y',哪个轴画网线
-'''
-#kw,参考plot中的kw
 
-#savefig
-plt.savefig(file)#保存figure
-#各种参数
 
-#sca
-plt.sca(ax)#设置当前的子图
 
-#gca
-plt.gca()#获取当前的子图
 
-#legend
-#返回值是Legend对象
-plt.legend([line1,line2], ['one','two'])#设置图例
-#各种参数
 
-#annotate
-#返回值是Annotation对象
-plt.annotate('text', xy=(2,3), xytext=(4,6), arrowprops=dict(shrink=0.05))#画箭头
-#参数
-'''
-xy:(x,y),箭头尖尖的坐标
-xytext:(x,y),文字坐标(箭头底部坐标),不提供则把文字画在xy处,此时箭头会变成一个三角标
-arrowprops:dict,箭头属性,不提供则不画箭头
-{
-    width:箭头身体宽度
-    headwidth:箭头尖尖宽度
-    headlength:箭头尖尖长度
-    shrink:不画的比例,就是箭头实际底部与xytext的距离占xy到xytext的比例
-    ?:还有
-}
-xycoords:?
-textcoords:?
-annotation_clip:bool,如果true,则xy在原本的区域里才会被画,默认None,当xycoords=='data'时认为是true
-'''
 
-#xscale,yscale
-plt.xscale('log')#改变坐标轴的量化
-plt.yscale('log')
-#scale(不同的scale可以使用不同的参数)
-'''
-'linear'(线性,默认)
-
-'log'(对数)
-{
-    basex,basey:?
-    nonposx,nonposy:'mask'|'clip',?
-    subsx,subsy:?
-}
-
-'logit'(对数0到1)
-{
-    nonpos:'mask'|'clip',?
-}
-
-'symlog'(有负的对数)
-{
-    basex,basey:?
-    linthreshx,linthreshy:?
-    subsx,subsy:?
-    linscalex,linscaley:?
-}
-'''
 
 #tight_layout
 plt.tight_layout()#调整子图的间距
@@ -253,106 +393,6 @@ rect:(left,bottom,right,top),?
 
 
 
-
-import numpy
-import matplotlib
-from matplotlib import pyplot
-
-#中文问题
-matplotlib.rcParams['font.sans-serif'] = ['SimHei']
-matplotlib.rcParams['axes.unicode_minus'] = False
-
-'''
-#简单画函数
-xvals = numpy.linspace(0, 2*numpy.pi, 50)
-yvals = numpy.sin(xvals)
-pyplot.plot(xvals, yvals, linewidth=1.0)#第三个参数是线条粗细
-
-pyplot.ylim(-2,2)#设置x轴范围
-pyplot.ylim(-2,2)#设置y轴范围
-
-pyplot.xlabel('x')
-pyplot.ylabel('sin(x)')
-pyplot.title(u'简单画函数')
-
-pyplot.grid(True)
-
-#pyplot.savefig('sin.png')
-
-pyplot.show()
-'''
-
-'''
-#图与子图
-pyplot.figure(1)#创建(选择)图1
-pyplot.figure(2)
-ax1 = pyplot.subplot(211)#在图2创建子图1
-ax2 = pyplot.subplot(212)#在图2创建子图2
-
-xvals = numpy.linspace(0, 5, 5)
-
-pyplot.figure(1)#选择图1
-pyplot.plot(xvals, numpy.exp(xvals))
-pyplot.title(u'exp函数')
-
-pyplot.sca(ax1)#选择图2的子图1
-pyplot.plot(xvals, numpy.sin(xvals))
-pyplot.title(u'sin函数')
-
-pyplot.sca(ax2)#选择图2的子图2
-pyplot.plot(xvals, numpy.cos(xvals))
-pyplot.title(u'cos函数')
-
-pyplot.show()
-'''
-
-'''
-#散点图
-xvals = numpy.linspace(0,10,20)
-yvals = numpy.sqrt(xvals)
-pyplot.plot(xvals, yvals, ':r')#'o'代表点,'r'是红色而已
-pyplot.show()
-#其他样式
-#颜色:b:blue,g:green,r:red,c:cyan,m:magenta,y:yellow,k:black,w:white
-#线条:'-':solid实线,'--':虚线,'-.':虚线+点,':':点
-#描点:'o':圆,'s':正方形,'p':五边形,'*':星形,'h':竖六边形,'H':横六边形,'+':加号,'x':x形,'D':菱形,'d':尖菱形
-'''
-
-'''
-#画多条线
-xvals = numpy.linspace(0,1,100)
-yvals1 = numpy.sqrt(xvals)
-yvals2 = numpy.exp(xvals)
-pyplot.plot(xvals, yvals1)
-pyplot.plot(xvals, yvals2)
-pyplot.show()
-'''
-
-'''
-#图例
-xvals = numpy.linspace(0,1,100)
-yvals1 = numpy.sqrt(xvals)
-yvals2 = numpy.exp(xvals)
-plot1, = pyplot.plot(xvals, yvals1, 'r')#注意逗号
-plot2, = pyplot.plot(xvals, yvals2, 'g')
-pyplot.legend([plot1,plot2], ('red','green'))
-pyplot.show()
-'''
-
-'''
-#直方图
-data = numpy.random.normal(0, 1, 1000)#正态分布(均值,方差),第三个参数表示产生多少个随机数
-pyplot.hist(data, histtype='stepfilled')#histtype参数去掉了内边框
-pyplot.show()
-'''
-
-'''
-#直方图自定义区间
-data = numpy.random.normal(0, 1, 1000)
-bins = numpy.arange(-4,4,0.5)
-pyplot.hist(data, bins, histtype='stepfilled')
-pyplot.show()
-'''
 
 #3d
 '''

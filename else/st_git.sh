@@ -16,7 +16,10 @@ git init
 git add a.txt
 git add *
 git add .
-git rm a.txt
+
+# rm
+git rm a.txt #本地和暂存区都删掉
+git rm --cached a.txt #只是暂存区删掉
 
 # checkout(文件)
 ## 暂存区->工作区,如果暂存区为空就是当前版本
@@ -41,6 +44,8 @@ git push --set-upstream origin dev #创建新分支,第一次push上去
 ## 删除远程分支
 git push origin :master
 git push origin --delete master
+## 强制回滚远程仓库
+git push -f
 
 # pull
 git pull
@@ -55,11 +60,15 @@ git remote add origin git@github.com:xxx/xxx.git
 
 # clone
 git clone git@github.com:xxx/xxx.git
+git clone -b dev git@github.com:xxx/xxx.git #clone指定分支
+git clone --depth 1 git@github.com:xxx/xxx.git #指定拷贝的历史节点数
+
+
 
 # checkout
 ## 切换当前分支
 git checkout dev
-## 创建并切换
+## 创建并切换  
 git checkout -b dev
 ## 从远程仓库拉取本地没有的分支
 git checkout -b dev origin/dev
@@ -190,6 +199,9 @@ git log a.txt
 ## 筛选出与某句代码有关的commit
 git log -S "xxx"
 git log -G "xxx" #正则表达式
+## 一种网上好看的写法
+git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
 
 # reflog
 git reflog
