@@ -4,7 +4,7 @@
 当前版本:HEAD
 上一个版本:HEAD^
 上两个版本:HEAD^^
-上十个版本:HEAD~10
+上十个版本:HEAD~10 (HEAD^^==HEAD~2)
 特定版本:2113a
 
 
@@ -41,10 +41,8 @@ git push #将当前分支推送到默认主机
 git push origin #将当前分支推送到origin仓库
 git push origin master #将本地的master分支推送到origin的master分支
 git push origin a:b #将本地的a分支推送到origin的b分支
-git push -u origin master #推送的同时将origin设为默认主机
-git push --set-upstream origin dev #创建新分支,第一次push上去
+git push -u origin dev #创建新分支,第一次push上去
 ## 删除远程分支
-git push origin :master
 git push origin --delete master
 ## 强制回滚远程仓库
 git push -f
@@ -53,12 +51,23 @@ git push -f
 git pull
 git pull origin dev
 
+# fetch
+git fetch
+git fetch origin
+git fetch origin master
+## 其他可选项
+git fetch --unshallow #clone时用了"--depth"时,使用这个命令可以下载该分支的所有历史记录
+
 # remote
 ## 查看远程仓库信息
 git remote
 git remote -v
+## 查看远程仓库所有分支(以及和本地分支的同步情况)
+git remote show origin
 ## 给远程仓库地址起名字
 git remote add origin git@github.com:xxx/xxx.git
+## 其他设置
+git remote set-branches --add origin dev #clone时用了"--depth"时,所有其他远程分支会被屏蔽,使用这个命令可以手动添加远程分支(修改.git/config)
 
 # clone
 git clone git@github.com:xxx/xxx.git
@@ -70,14 +79,14 @@ git clone --depth 1 git@github.com:xxx/xxx.git #指定拷贝的历史节点数
 # checkout
 ## 切换当前分支
 git checkout dev
-## 创建并切换  
+## 创建并切换分支
 git checkout -b dev
-## 从远程仓库拉取本地没有的分支
-git checkout -b dev origin/dev
+git checkout -b dev e21c #在某个commit创建分支
+git checkout -b dev origin/dev #从远程仓库拉取本地没有的分支(需先git fetch)
 
 # branch
 ## 查看分支
-git branch
+git branch #查看本地分支
 git branch -v
 git branch -vv #查看本地分支和远程分支的对应关系
 ## 创建分支
@@ -87,11 +96,17 @@ git branch -d dev
 git branch -D dev #强行删除
 ## 给本地分支和远程分支建立关系
 git branch -u origin/dev dev
+## 重命名分支
+git branch -m old new
 
 # merge
 git merge dev
 ## 不使用fast forward
 git merge --no-ff -m 'info' dev
+
+# rebase
+## 合并多次提交
+git rebase -i HEAD~2 #合并最近两次提交(除第一个外,pick都要改成s;这里HEAD~2并不参与合并)
 
 # stash
 ## 临时保存
@@ -145,6 +160,8 @@ git log --name-status
 git log --name-only #没有A,M,D信息
 ## 加上分支图
 git log --graph
+## 一行打印
+git log --oneline
 ## 版本号只显示前几位
 git log --abbrev-commit
 ## 时间使用相对时间
