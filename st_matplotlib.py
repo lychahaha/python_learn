@@ -212,12 +212,13 @@ ax.set_title(s, loc='center') #标题对齐,'center'|'left'|'right'
 
 # legend
 ## 返回值是Legend对象
-plt.legend() #设置显示图例
-plt.legend([line1,line2], ['one','two']) #对某些对象设置图例
-plt.legend(loc='upper left') #设置显示位置
+ax.legend() #设置显示图例
+ax.legend([line1,line2], ['one','two']) #对某些对象设置图例
+ax.legend(loc='upper left') #设置显示位置
 '''
 loc:'best','right','center','upper left','lower right','center right','left center'等等的各种组合
 '''
+ax.legend(prop={'family':'Times New Roman'})
 
 
 # xlim,ylim
