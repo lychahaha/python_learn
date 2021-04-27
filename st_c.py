@@ -46,6 +46,9 @@ lib.solve(ta, 5)
 lib.solve(b'23333')
 #void solve(const char* s);
 
+#str-pointer
+pa = ctypes.cast(b'233', ctypes.c_char_p)
+
 #np-pointer
 data = np.zeros((3,4), dtype=np.float32)
 pa = ctypes.cast(data.ctypes.data, ctypes.POINTER(ctypes.c_float))
