@@ -5,13 +5,15 @@ import numpy as np
 
 fig,ax = plt.subplots()
 
-# 折线图,直方图,柱状图,饼状图,散点图,图片
+# 折线图,直方图,柱状图,饼状图,散点图,文字,图片
 ax.plot(xs, ys)
 ax.hist(vals, bins=100)
 ax.bar(xs, heights)
 ax.pie(vals, labels=labels)
 ax.scatter(xs, ys)
+ax.text(x, y, 'haha')
 ax.imshow(img)
+
 
 ax.set_title('title')
 ax.set_xlabel('x')
@@ -186,12 +188,23 @@ frame: bool, 是否画坐标轴和框之类的,默认False
 
 # scatter(散点图)
 ax.scatter(xvals, yvals)
-ax.scatter(xvals, yvals, s=sizes, c=colors, edgecolor='black')
+ax.scatter(xvals, yvals, s=sizes, c=colors, edgecolor='black', facecolor='r')
 '''
 s: list[float], 每个点画出来的圆的面积
-c: list[color], 每个点的颜色
-edgecolor: 每个点的边缘颜色
+c: color|list[color], 每个点的颜色
+edgecolor: color|list[color], 每个点的边缘颜色(设置此参数会屏蔽color参数)
+facecolor: color|list[color], 每个点的内部颜色(设置此参数会屏蔽color参数)
 '''
+
+
+# text(文字)
+## 返回值是Text对象
+## 字体不能影响轴的lim
+ax.text(x, y, s)
+ax.text(x, y, s, withdash=False)#?
+ax.text(x, y, s, fontdict=None)#通过字典设置字体
+ax.text(x, y, s, fontsize=12)#字典中的各种属性也可以直接放在参数表上
+
 
 
 # image(图片)
@@ -200,6 +213,13 @@ ax.imshow(img)
 img: np数组(h,w)|(h,w,3)|(h,w,4), float|uint8
 '''
 
+
+# patch
+ax.add_patch(p)
+p.set_zorder(1) #设置z轴
+
+## polygon
+poly = plt.Polygon([(0,0),(1,0),(1,1),(0,1),(0,0)])
 
 # title,xlabel,ylabel
 ## 返回值是Text对象
@@ -214,9 +234,12 @@ ax.set_title(s, loc='center') #标题对齐,'center'|'left'|'right'
 ## 返回值是Legend对象
 ax.legend() #设置显示图例
 ax.legend([line1,line2], ['one','two']) #对某些对象设置图例
-ax.legend(loc='upper left') #设置显示位置
+ax.legend(loc='upper left', bbox_to_anchor=(0.1,0.1), ncol=2, handletextpad=0.0)
 '''
 loc:'best','right','center','upper left','lower right','center right','left center'等等的各种组合
+bbox_to_anchor: 基于loc的偏置微调
+ncol:列数
+handletextpad:图标和文字的间隔
 '''
 ax.legend(prop={'family':'Times New Roman'})
 
@@ -306,15 +329,6 @@ fig.savefig('a.png')
 
 
 
-
-
-# text(文字)
-## 返回值是Text对象
-## 字体不能影响轴的lim
-ax.text(x, y, s)
-ax.text(x, y, s, withdash=False)#?
-ax.text(x, y, s, fontdict=None)#通过字典设置字体
-ax.text(x, y, s, fontsize=12)#字典中的各种属性也可以直接放在参数表上
 
 
 # annotate(箭头)
@@ -411,3 +425,10 @@ ax.plot_wireframe(X, Y, Z, rstride=3, cstride=3, lw=0.5)
 
 plt.show()
 '''
+
+
+
+
+#其他
+##去掉边框
+ax.spines['top'].set_visible(False) #top|bottom|left|right
