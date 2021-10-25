@@ -67,7 +67,7 @@ sys.stderr#标准错误
 
 import glob
 #查找符合规则的文件名
-glob.glob('D:/code/*.py') #list of str
+glob.glob('D:/code/*.py') #list of str,全路径
 '''
 *:匹配0或多个字符
 **:匹配文件,目录
