@@ -20,7 +20,7 @@ a.update(dict1,dict2,...)#用参数字典里的键值对插入或替换,参数�
 
 #遍历
 for key in a:
-	print key,a[key]
+	print(key,a[key])
 
 #删除
 #a.pop(key[,default])

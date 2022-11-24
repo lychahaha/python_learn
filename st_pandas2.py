@@ -85,7 +85,7 @@ df2 = df.rename(columns={'old':'new'}) #单独改某列
 #load
 df = pd.read_csv('a.csv', sep=',')
 df = pd.read_json('a.json')
-df = pdf.read_pickle('a.pkl')
+df = pd.read_pickle('a.pkl')
 #save
 df.to_cvs('a.csv')
 df.to_json('a.json')
