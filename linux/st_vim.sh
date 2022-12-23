@@ -25,3 +25,30 @@ w #保存
 wq #保存并退出
 q! #强制退出
 
+
+#home目录下的.vimrc是vim的配置文件
+set nocompatible #去掉与vi有关的一致性执行
+set nu #显示行号
+filetype on #检测文件类型
+set history 1000 #记录历史行数?
+set background=dark #背景黑色
+syntax on #语法高亮
+set autoindent #自动缩进
+set smartindent #智能缩进
+set tabstop=4 #设置tab的宽度为4个空格
+set expandtab #使用空格代替tab
+set shiftwidth=4 #?
+set showmatch #显示括号匹配
+set guioptions-=T #去掉vimGUI版本的toolbar
+set vb t_vb= #去掉错误提示音
+set ruler #右下角显示光标位置
+set hlsearch #高亮搜索
+set incsearch #自动启动搜索
+colorscheme murphy #颜色风格
+set encoding=utf-8 #设置编码格式
+
+## 十字架光标
+set cursorcolumn #高亮光标所在列
+set cursorline #高亮光标所在行
+hi CursorLine cterm=None ctermbg=239 term=bold guibg=NONE guifg=NONE #高亮光标所在列样式
+hi CursorColumn cterm=None ctermbg=239 term=bold guibg=NONE guifg=NONE #高亮光标所在行样式

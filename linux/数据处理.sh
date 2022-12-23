@@ -23,3 +23,7 @@ find root_dir -xxx xxx #查找文件
 find ./ -name "*.c" #按名字查找
 find ./ -ctime 20 #最近20天更新过的文件
 find ./ -type f #查找所有“文件”
+
+# sed
+
+# awk
