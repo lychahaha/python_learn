@@ -27,6 +27,11 @@ cp src_path dst_path
 cp src_path dst_dir
 cp -r src dst #复制目录
 
+# scp
+scp xxx@192.168.2.2:/home/xx.txt /home/xx
+    -P 6000 #指定端口
+    -r #复制文件夹
+
 # mv
 mv src dst
 
@@ -34,6 +39,28 @@ mv src dst
 rm xxx
 rm -r xxx #删除目录
 rm -f xxx #不提示
+
+# ln
+ln /xx/src /xx/dst #创建硬链接
+    -s #创建软链接
+
+
+# find
+find root_dir -xxx xxx #查找文件
+    -name "*.c" #按名字查找
+    -user xx #按用户名查找
+    -group xx #按组查找
+    -ctime 20 #最近20天更新过的文件
+    -type f #按类型查找（这里是查找所有“文件”）
+    -size +50KB #按大小查找（这里是查找大于50KB的，减号则是小于）
+    -perm 777 #按权限查找
+    -exec ??? #查找后执行命令？
+
+# locate
+locate xxx.txt #快速查找文件（最好先执行updatedb建立索引）
+
+# which
+which xxx #快速查找二进制执行命令
 
 # touch
 touch xxx #创建新文件

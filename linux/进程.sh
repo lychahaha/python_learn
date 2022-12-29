@@ -11,10 +11,22 @@ top
     M #按内存占用排序
     P #按CPU占用排序
 
+
 # ps
 ps
-ps -aux #显示所有进程
+    -a #显示包括所有用户的进程
+    -u #显示用户
+    -x #显示没有终端的进程
+
+
+# pstree
+pstree #以树的形式显示进程表
+
 
 # kill
 kill xxx
 kill -9 xxx #最高强度kill
+
+
+# pidof
+pidof sshd #显示服务对应的进程pid

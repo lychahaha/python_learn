@@ -34,3 +34,6 @@ firewall-cmd --list-forward-ports #列出当前区域所有转发规则
 firewall-cmd --list-interfaces #列出当前区域所有网卡规则
 
 # SELinux
+getenforce #查看selinux状态
+setenforce 0 #设置selinux状态（0是permissive允许模式，1是enforcing强制模式）
+## semanage,restorecon,getsebool,setsebool

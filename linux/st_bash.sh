@@ -80,6 +80,7 @@ $? #返回值
 # 输入输出
 ## read
 read xxx
+read xxx -p 'enter passwd:' #带上提示
 ## echo
 echo $xxx
     -n #不换行

@@ -7,9 +7,23 @@ date +"%Y-%m-%d %H:%M:%S" #按格式显示时间
     %s #自1970年以来的秒数
 
 
+# timedatectl
+timedatectl #查看时间时区信息
+timedatectl set-timezone Asia/Shanghai #设置时区
+
+
+# at
+at -l #显示定时任务列表
+at 23:00 #添加定时任务（会进入编辑模式，可输入多行指令，ctrl+D退出）
+at -f xx.sh 23:00 #指定脚本作为定时任务
+at now +2 minutes #根据当前时间指定定时任务的执行时间
+at -c 2 #查看第2条定时任务
+at -d 2 #删除第2条定时任务
+
 # crontab
 crontab -l #查看定时任务清单
 crontab -e #通过交互模式编辑定时任务清单
+    -u user #编辑他人的计划
 crontab -r #删除定时任务清单
 
 ## 格式

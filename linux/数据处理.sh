@@ -17,12 +17,24 @@ sort xxx #以行为单位,按字典序排序
     -n #按数字排序
     -M #按三字符的月份排序
     -r #倒序
+    -f #忽略大小写
+    -u #去重
+    -t #指定key间隔符
+    -k #指定第几列是key（搭配-t使用）
 
-# find
-find root_dir -xxx xxx #查找文件
-find ./ -name "*.c" #按名字查找
-find ./ -ctime 20 #最近20天更新过的文件
-find ./ -type f #查找所有“文件”
+# tr
+echo hehe | tr a-z A-Z #逐字符替换（这里是转换大小写）
+
+# cut
+cut -x xxx.txt #按列取值
+    -b 3 #取每行的第x个字节
+    -d : #自定义分割符（这里是冒号）
+    -f 2 #取第几列
+
+# diff
+diff a.txt b.txt
+    -y #并排显示
+    -q #仅显示是否相同（相同是不会打印任何信息）
 
 # sed
 

@@ -31,3 +31,13 @@ tcpdump port 8080 #指定端口
 tcpdump tcp #指定协议
 
 tcpdump tcp[20:2]=0x4745 or tcp[20:2]=0x4854 #抓取http包
+
+# ping
+ping 123.45.67.89
+    -c 4 #指定次数
+
+# tracepath
+tracepath 123.45.67.89
+
+
+# nmcli
