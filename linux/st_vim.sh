@@ -18,15 +18,15 @@ p #粘贴
 o #切换到输入模式，并另起空行
 
 # 输入模式
-esc #切换到命令模式
+esc #切换到命令模式（或ctrl+c）
 
 #底线模式
 q #退出
 w #保存
 wq #保存并退出
 q! #强制退出
-s /aaa /bbb /g #替换当前行的所有aaa变成bbb（没有/g则只替换一个）
-%s /aaa /bbb /g #替换全文的所有aaa变成bbb
+s/aaa/bbb/g #替换当前行的所有aaa变成bbb（没有/g则只替换一个）
+%s/aaa/bbb #替换全文的所有aaa变成bbb（注意不用/g）
 
 
 

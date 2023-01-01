@@ -1,3 +1,5 @@
+#ignore:[DNS],[DHCP],[email],[postfix],[dovecot],[mailx]
+
 # netstat
 netstat #显示所有网络连接和本地套接字
     -a #显示全部连接（包括监听中的）
@@ -22,8 +24,11 @@ ifconfig #显示所有网卡信息
 # tcpdump
 tcpdump #linux里的wireshark
     -i ens33 #指定网卡
-    -w packets.pcap #指定保存文件
-    -n #显示数字而不是名称
+    -w packets.pcap #指定保存文件（给wireshark用）
+    -n #ip显示数字而不是名称
+    -nn #ip和端口都显示数字而不是名称
+    -XX #显示十六进制和ascii值的包信息（一般给wireshark用）
+    -vvv #显示最全的信息（一般给wireshark用）
 tcpdump host 123.45.67.89 #抓取特定主机
 tcpdump src host 123.45.67.89 #指定发送源
 tcpdump dst host 123.45.67.89 #指定目标源
@@ -38,6 +43,9 @@ ping 123.45.67.89
 
 # tracepath
 tracepath 123.45.67.89
+
+# nslookup
+nslookup baidu.com # DNS查找
 
 
 # nmcli

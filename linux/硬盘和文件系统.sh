@@ -21,7 +21,7 @@ blkid /dev/sdb1 #查看设置的UUID
 
 # fdisk
 fdisk -l #显示所有硬盘和分区信息(需要root权限)
-fdksi /dev/sda #管理
+fdisk /dev/sda #管理
     m #help
     p #打印分区信息
     n #新增分区

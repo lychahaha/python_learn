@@ -1,9 +1,12 @@
-#生成
+# 生成密钥
 ## id_rsa是私钥, id_rsa.pub是公钥
-## 公钥给github, 私钥在登录的时候用
+## 公钥给远程主机, 私钥在登录的时候用
 ssh-keygen -t rsa -C "123@qq.com"
 
-#config(用于快速ssh和vscode跳板等)
+# 远程config
+cat id_rsa.pub >> ~/.ssh/authorized_keys
+
+# 本地config(用于快速ssh和vscode跳板等)
 ## ServerAliveInterval 60 表示每60秒心跳
 ## IdentityFile给的是私钥
 ## 局域网机器只比跳板机多了一行ProxyCommand

@@ -4,7 +4,7 @@
 useradd xxx #新增用户
     -d /home/xxx #指定home目录
     -g xxx #指定所属组
-    -s xxx #指定shell
+    -s /bin/bash #指定shell
     -m # 使用-d指定原本不存在的目录时，要用这个创建新目录
 
 # userdel
