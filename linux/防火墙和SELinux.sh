@@ -10,7 +10,7 @@ firewall-cmd --state #查看防火墙状态
 firewall-cmd --runtime-to-permanent #将当前配置永久化
 
 firewall-cmd --zone=public --add-port=8001/tcp #增加规则
-    --permanent #重启依然生效
+    --permanent #重启生效（但现在不生效）
     --add-port=8001/tcp #添加端口规则
     --add-service=ssh #添加服务规则（本质上是添加端口，对应规则在/usr/lib/firewalld/services里）
     --add-source=192.168.1.100 #添加白名单ip(网段则写成如192.168.1.0/24)

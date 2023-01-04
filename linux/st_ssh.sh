@@ -64,3 +64,10 @@ Host abc
 
 git clone github@abc.com:1234/def/ghi.git
 git clone github@abc/def/ghi.git
+
+
+# 设置ssh可用root远程登录
+## 编辑/etc/ssh/sshd_config
+PermitRootLogin yes
+## 重启sshd服务
+systemctl restart sshd
