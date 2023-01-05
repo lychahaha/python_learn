@@ -1,6 +1,12 @@
 # 指定shell
 #!/bin/bash
 
+# bash
+bash a.sh
+    -s #脚本来自标准输入
+    -c "echo hehe" #执行一条命令
+    -- xxx xxx #表示后面都是脚本里所需的参数，而不是bash的参数
+
 
 # 变量
 ## get
