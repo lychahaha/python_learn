@@ -49,3 +49,21 @@ nslookup baidu.com # DNS查找
 
 
 # nmcli
+
+# route
+route -n #显示路由表
+## 路由表中的flag含义
+## U:活动路由，基本都带
+## G:发给网关，不给该标志意味着发本地处理
+## H:目标是一台主机
+
+route add -host 123.45.67.89 dev eth0 #添加路由规则
+route del -host 123.45.67.89 dev eth0 #删除路由规则
+ip route add default gw 192.168.0.1 dev eth0 #添加默认路由
+ip route del default dev eth0 #删除默认路由
+## 参数含义
+## -host:目标是主机
+## -net:目标是网络，用192.168.0.0/24表示，或只有ip，通过netmask 255.255.255.0表示子网掩码
+## default:表示默认路由
+## gw:网关地址
+## dev:网卡

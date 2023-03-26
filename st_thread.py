@@ -17,7 +17,7 @@ class myThread(threading.Thread):
 
 	#子线程函数
 	def run(self):
-		print self.args
+		print(self.args)
 
 t = myThread('a', 'b')
 
