@@ -69,6 +69,12 @@ chmod [ugoa] [+-=] [rwxXstugo] #改变权限
 ## code的格式如777,每个数字分别代表本用户、所属组、其他人的权限码
 ## 每个权限码=4(r)+2(w)+1(x)
 
+# chown
+chown new_user xxx #改变xxx的所属用户为new_user
+
+# chgrp
+chgrp new_group xxx #改变xxx的所属组为new_group
+
 # lsattr
 lsattr #查看当前目录所有文件的隐藏属性
 lsattr a.txt #查看某个文件的隐藏属性

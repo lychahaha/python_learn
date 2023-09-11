@@ -7,6 +7,23 @@ ls -a #隐藏文件
 ls -R #遍历子孙目录
 ls xx* #模糊匹配
 
+# tree
+tree
+tree xxx #对xxx展开树目录
+tree -L 2 #显示2层深度
+tree -a #隐藏文件
+tree -d #仅显示目录，不显示文件
+tree -f #显示每个文件的相对路径
+tree -p #显示文件权限
+tree -s #显示文件大小
+tree -h #human readable
+
+# lsof
+lsof xxx.txt #查看哪个进程占用该文件
+lsof -p xxx #查看pid为xxx的进程占用了哪些文件
+lsof -u xxx #查看xxx用户占用了哪些文件
+lsof -i @192.168.1.13 #查看该ip对应套接字涉及的文件
+
 # cd
 cd xx
 cd .. #返回上一级目录

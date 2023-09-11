@@ -9,7 +9,7 @@ from appium.webdriver.common.touch_action import TouchAction
   "appium:platformVersion": "10",
   "appium:deviceName": "8f877c93",
   "appium:appPackage": "com.lianjia.beike",
-  "appium:appActivity": "com.lianjia.activity.MainActivity",
+  "appium:appActivity": "com.lianjia.activity.MainActivity"
 }
 '''
 
@@ -21,6 +21,7 @@ desired_caps['deviceName'] = '1111ffff' # 设备名字可以随便写，但是�
 desired_caps['appPackage'] = 'com.lianjia.beike' #app名字
 desired_caps['appActivity'] ='com.lianjia.activity.MainActivity' #app入口界面
 desired_caps["newCommandTimeout"] = "6000" #设置不操作自动退出的timeout（有多大设多大）
+desired_caps['noReset'] = "True" #启动app时不要清除app里的原有的数据
 # 启动APP
 driver = webdriver.Remote('http://localhost:4723/wd/hub',desired_caps)
 
@@ -78,11 +79,13 @@ driver.open_notifications()
 driver.close_app() #关闭app
 driver.install_app('C:\\a.apk') #安装app
 driver.remove_app('com.lianjia.beike') #卸载app
+driver.start_activity('app_name', 'activity_name') #启动app
 ## 退出
 driver.quit()
 ## 熄屏和亮屏
 driver.lock()
 driver.unlock()
+driver.is_locked()
 ## 隐藏键盘
 driver.hide_keyboard()
 ## 键盘码

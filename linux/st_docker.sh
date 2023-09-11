@@ -33,7 +33,9 @@ docker exec -d xxx touch /hehe.txt #后台执行
 docker exec -t -i xxx /bin/bash #前台执行
 ## 回到前台
 docker attach xxx
-
+## 复制文件
+docker cp a.txt xxx:/etc/a.txt #从宿主机到容器xxx
+docker cp xxx:/etc/a.txt a.txt #从容器xxx到宿主机
 
 
 
