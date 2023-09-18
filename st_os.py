@@ -63,6 +63,8 @@ os.path.basename(path) #返回路径的文件名
 os.path.abspath(path) #获取目录(文件)的绝对路径
 os.path.abspath('.') #获取当前绝对路径
 
+os.utime('a.txt',(atime,mtime)) #修改文件的访问时间和修改时间
+
 os.system("cls") #执行cmd命令
 
 os.fork()
