@@ -85,6 +85,7 @@ ele.click() #点击该元素
 ele.double_click() #双击该元素
 ele.right_click() #右击该元素
 ele.scroll_to() #滚动到该元素
+br.execute_script("window.scrollTo(0, document.body.scrollHeight);") #滚动到底部
 ele.drag_and_drop(ele2) #把ele拖放到ele2
 ele.fill('xxx') #还有choose,select等表单操作
 ###属性

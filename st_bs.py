@@ -30,8 +30,15 @@ a.get('href')
 #文字
 p.text
 
-#儿子
+#亲戚
 div.contents #list,儿子列表,儿子有可能是Tag或NavigableString
+div.parent #父亲
+div.next_sibling #最大弟弟
+div.next_siblings #弟弟列表的生成器
+div.previous_sibling #最小哥哥
+div.previous_siblings #哥哥列表的生成器
+div.next_element #包括嵌套下的下一个，有可能是Tag或NavigableString
+
 
 #搜索
 soup.find_all('a')

@@ -16,8 +16,8 @@ nginx -s quit #？
 #conf结构
 ## 全局设置
 ## 性能设置
-## http设置
-##  upstream
+## http设置/stream设置
+##  upstream（转发后端）
 ##  server（虚拟主机）
 ##   location （匹配规则）
 
@@ -36,6 +36,13 @@ http{
         server 192.168.1.4:80;
     }
 
+    server {
+        # ...
+    }
+}
+
+# stream设置(tcp/udp,与http并列)
+stream{
     server {
         # ...
     }
@@ -89,6 +96,18 @@ server {
         }
     }
 }
+
+# tcp/udp server
+server{
+    listen 2345; #tcp
+    listen 2345 udp; #udp
+    proxy_connect_timeout 30s; #连接时的timeout(仅tcp有效)
+    proxy_timeout 24h; #keep alive时间(udp默认10分钟断开)
+    proxy_responses 1; #收到发回的1个udp包后断开(仅udp有效)
+    proxy_pass 1.2.3.4:5678;
+}
+
+
 
 # 负载均衡
 ## 轮询（默认）

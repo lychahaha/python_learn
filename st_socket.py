@@ -18,10 +18,11 @@ client.close()
 server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 server.bind(('localhost',8001))
 data,addr = server.recvfrom(20)
+server.sendto(b'hehe', addr)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client.sendto(b'hehe', ('localhost',8001))
-
+data,addr = client.recvfrom(20)
 
 # 其他
 conn.getpeername() #返回对方的addr
