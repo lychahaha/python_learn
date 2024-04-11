@@ -47,6 +47,19 @@ tracepath 123.45.67.89
 # nslookup
 nslookup baidu.com # DNS查找
 
+# nc
+##apt install netcat
+nc 12.34.56.78 2345 #创建tcp连接（后续可输入任意数据进行传输）
+nc 12.34.56.78 2345 < a.txt #传输文件
+nc -lv 2345 #监听tcp端口
+nc -lv 2345 > a.txt #监听并将接收到的数据写入文件
+    -l #监听(listen)
+    -v #输出反馈(verbose)
+    -u #udp模式
+    -k #支持重复连接
+    -4 #强制使用ipv4
+    -6 #强制使用ipv6
+
 
 # nmcli
 
