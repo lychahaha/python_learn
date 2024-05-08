@@ -121,24 +121,6 @@ with br.get_iframe('iframe_id') as iframe:
 
 
 
-
-# xpath
-//input #查找所有的input
-//input[@class="as bs"] #带属性筛选（属性必须全部写出来）
-//input[contains(@class,"as")] #包含某属性
-//input[contains(@class,"as") or contains(@class,"as")] #支持与或运算
-//input[@td] #包含该属性的属性筛选
-//div/input #父亲是div的input
-//div[@id="e"]//div #该div的所有div子孙
-//div[@id="e"]/input[1] #该div的所有input儿子的第一个
-//div[@id="e"]/input[last()] #该div的所有input儿子的最后一个
-//div[@id="e"]/* #该div的所有儿子（*其实是通配符）
-//div[@id="e"]/.. #该div的父亲
-//div[@id="e"]/preceding-sibling::p[1] #该div的前一个哥哥p
-//div[@id="e"]/following-sibling::p[1] #该div的后一个弟弟p
-//div[@id="e"]/following-sibling::*[1] #该div的后一个弟弟
-
-
 # css
 div #全部div
 div,p #全部div和p
