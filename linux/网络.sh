@@ -60,8 +60,26 @@ nc -lv 2345 > a.txt #监听并将接收到的数据写入文件
     -4 #强制使用ipv4
     -6 #强制使用ipv6
 
+# iperf
+## 下载
+'''
+win下载: https://iperf.fr/iperf-download.php
+linux下载: yum install iperf
+android下载: apk名为"Magic iPerf including iPerf3"
+'''
+## 服务端
+iperf3 -s -p1234 #启动服务端，默认端口5201
+## 客户端
+iperf3 -c 12.34.56.78 -p 5201 #客户端访问服务器
+## 其他选项
+-t 60 #测试60秒，默认10秒
+-I 10M #发送10M的数据包
+-u #测试udp
+-f M #指定bit单位
+
 
 # nmcli
+# nmtui
 
 # route
 route -n #显示路由表

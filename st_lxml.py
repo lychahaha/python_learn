@@ -24,7 +24,7 @@ ele.values() #字典的values
 # 删除元素
 ele.remove(ele_son) #只能是爸爸删除儿子
 
-# 显示元素HTML
+# 获取元素HTML
 etree.tounicode(ele, method='html')
 
 
@@ -50,6 +50,10 @@ etree.tounicode(ele, method='html')
 //div[@id="e"]/following-sibling::*[1] #该div的后一个弟弟
 //div[@id="e"]/ancestor::*[1] #该div的最老祖先
 
+.//div #以当前元素为根搜索所有div子孙
+./div #当前元素的所有div儿子
 ./.. #当前元素的父亲(./表示当前元素)
 
 //div/a | //div/b #并集
+
+//a/@href #提取所有a的href属性

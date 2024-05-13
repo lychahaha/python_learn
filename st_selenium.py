@@ -8,6 +8,9 @@ br.get('https://www.baidu.com') #打开页面
 br.back() #后退
 br.forward() #前进
 br.close() #关闭
+br.maximize_window() #最大化
+br.minimize_window() #最小化
+br.quit() #退出浏览器
 
 # 窗口
 br.window_handles #所有窗口
@@ -71,3 +74,23 @@ div.location
 
 # 执行js脚本
 br.execute_script('arguments[0].scrollIntoView();', div)
+
+# MHTML数据
+from email.parser import Parser #用于解析MHT文件
+import base64 
+
+res = br.execute_cdp_cmd('Page.captureSnapshot', {}) #获取MHT数据(一个dict,只有一个key为"data",value是字符串)
+open("a.mht", 'w', encoding='utf-8').write(res['data']) #保存为MHT文件
+mht = Parser().parsestr(res['data']) #解析MHT
+
+mht.is_multipart() #是否多part
+for part in mht.walk(): #遍历每个part
+    pass
+
+part.get_content_type() #该part的type，如text/html、image/jpeg
+part.get_content_maintype() #该part的type的前半段
+part.get_content_subtype() #该part的type的后半段
+part.keys() #part本身作为字典存储了一些键值对
+part['Content-Location'] #该part的url
+part.get_payload() #该part的文件内容
+open("a.jpg",'wb').write(base64.b64decode(part.get_payload())) #part为图片时需b64解码

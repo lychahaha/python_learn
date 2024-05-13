@@ -45,6 +45,15 @@ unbind '"'
 bind - splitw -v
 unbind %
 bind | splitw -h
+## 绑定更新配置快捷键
+bind r source-file ~/.tmux.conf \; display-message "Config reloaded..."
+## 修改颜色
+set -g status-bg colour235
+set -g status-fg colour136
+## 修改状态栏
+set -g status-left "tmux #I:#P"
+set -g status-right "%A %Y-%m-%d %H:%M"
 ## 其他
 set -g history-limit 65535 #修改缓冲区上限
 set -g mouse on #启用鼠标
+set -g default-path "~/" #设置默认路径

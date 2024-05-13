@@ -7,6 +7,7 @@ import json
 json.dumps(obj)
 json.dumps(obj, sort_keys=True)#排序
 json.dumps(obj, indent=4)#设置缩进
+json.dumps(obj, ensure_ascii=False)#允许带非ascii字符
 json.dumps(obj, separators)#去掉空格等
 #str->obj
 json.loads(string)
@@ -49,3 +50,13 @@ class decoder(json.JSONDecoder):
 
 d = encoder().encode(obj)
 obj = decoder().decode(d)
+
+
+
+
+
+import pickle
+
+data = pickle.load(open('a.pkl','rb'))
+pickle.dump(data, open('a.pkl','wb'))
+
