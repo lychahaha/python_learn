@@ -25,7 +25,7 @@ br.current_url
 
 # cookie
 br.add_cookie({'a':'b'})
-br.get_cookie('a')
+br.get_cookie('a') #给的参数是cookie的name字段
 br.get_cookies()
 
 # iframe
@@ -66,6 +66,9 @@ Select(ele).select_by_visible_text('xx')
 # 元素属性
 div.get_attribute('class')
 div.get_attribute('outerHTML')
+div.get_dom_attribute('xxx') #HTML代码固有属性
+div.get_property('xxx') #js属性
+div.get_attribute('xxx') #先看property，没才找dom_attribute
 div.text
 div.id
 div.tag_name

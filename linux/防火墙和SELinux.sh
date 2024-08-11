@@ -1,4 +1,84 @@
 # iptables
+## 四表五链
+##              raw     mangle  nat     filter
+## pre_routing  √       √       √       
+## input                √               √
+## forward              √               √
+## output       √       √       √       √
+## post_routing         √       √       
+
+## 五链
+##    ---------------------------------------------------
+## -> | pre_routing -> ROUTE -> forward -> post_routing | ->
+##    |                ↓                      ↑         |
+##    |              input                  ROUTE       |
+##    |                ↓                      ↑         |
+##    |                ↓                    output      |
+##    ---------------------------------------------------
+##                     ↓                      ↑
+
+## 查询规则
+iptables -L #显示所有规则
+## 每个规则包括以下列:
+## target:动作
+##   ACCEPT DROP REJECT
+##   SNAT DNAT REDIRECT
+##   LOG
+##   跳到其他自定义链
+## prot:协议
+##   TCP UDP
+## opt
+## source:源地址
+## destination:目标地址
+
+## 增加自定义链
+iptables -N mychain
+## 跳转到自定义链
+iptables -A INPUT -j BLOCK_1234
+
+## 增加规则
+iptables -I INPUT 2 -s 192.168.1.1/32 -j DROP
+## -I INPUT 2   -I表示插入,INPUT为链名, 2为序号(同时表示优先级,若不指定则序号为1)
+## -s 源地址
+## -j 动作
+iptables -A INPUT -t filter -p tcp -d 192.168.1.1/32 --sport 22 --dport 22,23 -j DROP
+## -A 表示追加
+## -t 表名(默认是filter)
+## -p 协议
+## -d 目标地址
+## --sport 源端口(多个加逗号)
+## --dport 目标端口
+
+## 删除规则
+iptables -D INPUT 2 #删除2号规则
+iptables -D INPUT -s 192.168.1.1/32 #删除INPUT链中包括xxx源地址的所有规则
+iptables -F #删除所有规则
+
+## 保存配置
+iptables-save > /root/xxx.bak
+
+## 禁止端口访问
+iptables -I INPUT -p tcp --dport 22 -j DROP
+
+## 反向代理
+iptables -t nat -A PREROUTING -p tcp --dport 1234 -j DNAT --to-destination 192.168.1.23:22
+iptables -t nat -A POSTROUTING -p tcp --sport 22 -j SNAT --to-source 12.34.56.78:1234
+
+## 蜜罐端口
+iptables -A BLOCK_1234 -p tcp -m tcp --dport 1234 -m recent --set --name BLOCK_1234 --rsource
+iptables -A BLOCK_1234 -p tcp -m recent --update --seconds 60 --hitcount 1 --name BLOCK_1234 --rsource -j DROP
+iptables -A BLOCK_1234 -m recent --remove --name BLOCK_1234 --rsource
+## 1.记录下访问1234/tcp的包，记录到BLOCK_1234表中，该表以源地址进行聚合
+## 2.60秒内BLOCK_1234中有大于≥1条记录的，执行drop
+## 3.自动清除BLOCK_1234超过60秒的记录
+## 这些记录存储在/proc/net/xt_recent中
+
+## 打log
+iptables -I PREROUTING -t nat -j LOG --log-prefix "[NAT_PREROUTING_LOG]"
+
+
+
+
 
 # firewall
 systemctl status firewalld #查看是否打开防火墙

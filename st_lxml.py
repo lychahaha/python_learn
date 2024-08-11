@@ -35,9 +35,11 @@ etree.tounicode(ele, method='html')
 
 //input[@class="as bs"] #带属性筛选（属性必须全部写出来）
 //input[contains(@class,"as")] #包含某属性
-//input[contains(@class,"as") or contains(@class,"as")] #支持与或运算
+//input[contains(@class,"as") or contains(@class,"as")] #支持与或非运算
 //input[@td] #包含该属性的属性筛选
 //*[@class="haha"] #符合某些属性的任意元素
+//input[starts-with(@class,"as")] #属性以某字符串开始
+//input[ends-with(@class,"as")] #属性以某字符串结束
 
 //div[@id="e"]/input #该div的input儿子
 //div[@id="e"]/input[1] #该div的所有input儿子的第一个
@@ -55,5 +57,8 @@ etree.tounicode(ele, method='html')
 ./.. #当前元素的父亲(./表示当前元素)
 
 //div/a | //div/b #并集
+//div/*[self::a or self::b]/c #路径中途有并集（此处利用了轴）
 
 //a/@href #提取所有a的href属性
+//a/text() #提取文本（不包括儿子）
+string(//a) #提取文本（包括儿子，但也包括弟弟文本）

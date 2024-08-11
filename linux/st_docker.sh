@@ -1,5 +1,34 @@
 #ignore:Jenkins,Consul,Swarm,docker API
 
+# 安装
+## ubuntu
+apt install docker.io docker-compose
+## centos
+yum install docker-ce docker-ce-cli containerd.io
+
+
+# 设置镜像源
+vim /etc/docker/daemon.json
+'''
+{
+  "registry-mirrors": ["https://ckdhnbk9.mirror.aliyuncs.com"]
+}
+'''
+'''
+网易:http://hub-mirror.c.163.com
+中科大镜像地址:http://mirrors.ustc.edu.cn/
+中科大github地址:https://github.com/ustclug/mirrorrequest
+Azure中国镜像地址:http://mirror.azure.cn/
+Azure中国github地址:https://github.com/Azure/container-service-for-azure-china
+DockerHub镜像仓库: https://hub.docker.com/ 
+阿里云镜像仓库: https://cr.console.aliyun.com 
+google镜像仓库: https://console.cloud.google.com/gcr/images/google-containers/GLOBAL 
+coreos镜像仓库: https://quay.io/repository/ 
+RedHat镜像仓库: https://access.redhat.com/containers
+'''
+systemctl restart docker
+
+
 # 运行
 docker run -i -t ubuntu /bin/bash #交互式运行
 docker run -d ubuntu nginx #后台运行

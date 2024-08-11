@@ -1,5 +1,8 @@
 #ignore:[DNS],[DHCP],[email],[postfix],[dovecot],[mailx]
 
+# 设置ip转发
+net.ipv4.ip_forward=1 #在/etc/sysctl.conf里加入这句
+
 # netstat
 netstat #显示所有网络连接和本地套接字
     -a #显示全部连接（包括监听中的）
@@ -19,7 +22,14 @@ netstat -r #显示路由表
 netstat -anp | grep 8080 #查看端口占用
 
 # ifconfig
-ifconfig #显示所有网卡信息
+## 显示所有网卡信息
+ifconfig 
+## 虚拟网卡
+ifconfig eth0:0 192.168.2.2 netmask 255.255.255.0 #增加虚拟网卡,注意网卡的名字是物理网卡加:0的格式
+ifconfig eth0:0 up #启动虚拟网卡
+ifconfig eth0:0 down #关闭虚拟网卡
+ifconfig eth0:0 del #删除虚拟网卡
+
 
 # tcpdump
 tcpdump #linux里的wireshark
@@ -48,7 +58,8 @@ tracepath 123.45.67.89
 nslookup baidu.com # DNS查找
 
 # nc
-##apt install netcat
+##Linux: apt install netcat
+##windows: https://eternallybored.org/misc/netcat/
 nc 12.34.56.78 2345 #创建tcp连接（后续可输入任意数据进行传输）
 nc 12.34.56.78 2345 < a.txt #传输文件
 nc -lv 2345 #监听tcp端口

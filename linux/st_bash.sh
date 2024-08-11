@@ -215,3 +215,7 @@ echo $? #获取返回值
 
 # import
 source xxx.sh
+
+# set
+set -x #显示执行的命令
+set +x #不显示执行的命令(-是启用，+是关闭)
