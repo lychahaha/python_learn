@@ -67,7 +67,7 @@ find root_dir -xxx xxx #查找文件
     -name "*.c" #按名字查找
     -user xx #按用户名查找
     -group xx #按组查找
-    -ctime 20 #最近20天更新过的文件
+    -mtime -20 #最近20天修改过的文件
     -type f #按类型查找（这里是查找所有“文件”）
     -size +50KB #按大小查找（这里是查找大于50KB的，减号则是小于）
     -perm 777 #按权限查找

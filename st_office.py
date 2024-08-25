@@ -1,6 +1,11 @@
 import openpyxl
 from openpyxl.styles import Font,PatternFill,GradientFill,Alignment,Border,Side
+
+import docx
+
 import pandas as pd
+
+# ---------------xlsx----------------
 
 data = pd.read_excel('a.xls', sheet_name='Sheet1') #pd数组
 
@@ -67,3 +72,17 @@ book[sheet]['A1'].border = Border(
     diagonal=side  # 对角线
 )
 
+
+# ---------------docx----------------
+
+# 打开和保存
+doc = docx.Document('a.docx')
+
+texts = [p.text for p in doc.paragraphs]
+
+tables = doc.tables
+
+tables[0].rows #行数
+tables[0].columns #列数
+
+tables[0].cell(0,0).text #获取值

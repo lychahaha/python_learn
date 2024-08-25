@@ -97,14 +97,30 @@ server {
     }
 }
 
+# https 代理
+server{
+    listen 1234 ssl;
+
+    ssl_certificate /etc/nginx/ssl_certs/cert.crt; #ssl所需证书
+    ssl_certificate_key /etc/nginx/ssl_certs/pri.key; #ssl所需密钥
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    location / {
+        proxy_pass http://127.0.0.1:4567;
+    }
+}
+
+
 # tcp/udp server
 server{
     listen 2345; #tcp
+    proxy_pass 1.2.3.4:5678;
+    
     listen 2345 udp; #udp
+    
     proxy_connect_timeout 30s; #连接时的timeout(仅tcp有效)
     proxy_timeout 24h; #keep alive时间(udp默认10分钟断开)
     proxy_responses 1; #收到发回的1个udp包后断开(仅udp有效)
-    proxy_pass 1.2.3.4:5678;
 }
 
 
