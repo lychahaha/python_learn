@@ -32,7 +32,7 @@ ifconfig eth0:0 del #删除虚拟网卡
 
 
 # tcpdump
-tcpdump #linux里的wireshark
+tcpdump #linux里的wireshark（安卓用vnet）
     -i ens33 #指定网卡
     -w packets.pcap #指定保存文件（给wireshark用）
     -n #ip显示数字而不是名称
