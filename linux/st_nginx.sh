@@ -105,6 +105,10 @@ server{
     ssl_certificate_key /etc/nginx/ssl_certs/pri.key; #ssl所需密钥
     ssl_protocols TLSv1.2 TLSv1.3;
 
+    # 开启双向认证
+    ssl_client_certificate /etc/nginx/ssl_certs/ca.crt; #认证客户端所用的证书
+    ssl_verify_client on;
+
     location / {
         proxy_pass http://127.0.0.1:4567;
     }

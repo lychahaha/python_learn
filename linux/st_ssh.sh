@@ -71,3 +71,7 @@ git clone github@abc/def/ghi.git
 PermitRootLogin yes
 ## 重启sshd服务
 systemctl restart sshd
+
+
+# SSH隧道
+ssh -L 12349:127.0.0.1:34567 root@192.168.222.22

@@ -1,16 +1,17 @@
 # 开启转发
 vim /etc/sysctl.conf #追加net.ipv4.ip_forward = 1
 sysctl -p
-
+# 开启nat
+iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -j MASQUERADE
 
 
 # 安装easy-rsa生成证书和密钥
 ## 下载
 yum install easy-rsa
 apt install easy-rsa
-## 配置
+## 配置（以下教程针对3.0版本）
 mkdir /opt/easy-rsa
-cp /usr/share/easy-rsa/* /opt/easy-rsa
+cp -r /usr/share/easy-rsa/* /opt/easy-rsa
 cd /opt/easy-rsa
 mv vars.example vars
 vim vars #编辑证书用户信息
@@ -119,7 +120,6 @@ cert client.crt
 key client.key
 verb 3
 persist-key
-comp-lzo
 
 
 # check.sh
