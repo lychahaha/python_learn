@@ -108,6 +108,7 @@ server{
     # 开启双向认证
     ssl_client_certificate /etc/nginx/ssl_certs/ca.crt; #认证客户端所用的证书
     ssl_verify_client on;
+    error_page 495 496 497 https://www.xxx.com; #认证失败后跳转到其他地方
 
     location / {
         proxy_pass http://127.0.0.1:4567;

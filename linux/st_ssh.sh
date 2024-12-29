@@ -74,4 +74,30 @@ systemctl restart sshd
 
 
 # SSH隧道
-ssh -L 12349:127.0.0.1:34567 root@192.168.222.22
+## 借跳板机访问内网服务器
+ssh -L 12349:127.0.0.1:34567 root@192.168.222.22 # 本地监听端口:服务器ip:服务器端口 用户@跳板机ip
+## 借跳板机让跳板机内网能访问本地(或本地局域网其他服务器)服务
+ssh -R 12345:127.0.0.1:34567 root@192.168.222.22 # 远程监听端口:本地ip:本地端口 用户@跳板机ip
+## 拿跳板机作为SOCKS代理
+ssh -D 12345 root@192.168.222.22 # 本地代理端口 用户@跳板机ip
+
+
+# fail2ban
+vim /etc/fail2ban/jail.local #优先级比jail.conf高,修改后需重启该服务
+## jail.local
+[DEFAULT]
+ignoreip = 127.0.0.1
+findtime = 100 #统计一段时间内的失败访问情况
+maxretry = 3 #最多允许失败的词数
+bantime = 3600 #封禁时间，如果是-1则是永久封禁
+banaction = iptables-allports
+
+[sshd]
+enabled = true
+port = 22
+filter = sshd
+logpath = /var/log/auth.log
+
+fail2ban-client status #查看监控哪些服务
+fail2ban-client status sshd #查看sshd的封禁情况
+fail2ban-client set sshd unbanip 12.34.56.78 #手动解除该IP的封禁

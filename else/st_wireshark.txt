@@ -9,6 +9,8 @@
         -resolve transpose name #端口用名字表示
         -resolve network IP address #IP用名字表示
         -only use profile host #使用host文件指定名字（路径是{user}/Application Data/Wireshark/hosts）
+    -Protocols
+        -TLS #最下面的(Pre)Master-Secret log filename设为某个新建txt文件的路径，然后电脑环境变量设置SSLKEYLOGFILE为该txt文件路径，即可让wireshark自动解密TLS加密的内容
 
 捕获
 -选项 #可以捕获时就设置过滤
