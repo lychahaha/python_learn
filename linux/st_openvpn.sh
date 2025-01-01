@@ -33,10 +33,11 @@ apt install openvpn
 ## 配置
 mkdir /etc/openvpn/keys
 cp ca.crt dh.pem server.crt server.key /etc/openvpn/keys #拷贝前面生成的证书和密钥
-cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf /etc/openvpn #拷贝示例配置文件
-vim /etc/openvpn/server.conf #改协议(tcp/udp),改子网和端口,修改证书和密钥路径,加路由信息,修改对称加密算法为GCM
+openvpn --genkey secret ta.key #生成tls-auth密钥并存放到/etc/openvpn/keys里
+cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf /etc/openvpn #拷贝示例配置文件(也可以直接拷贝下面的)
+vim /etc/openvpn/server.conf #改协议(tcp/udp),改子网和端口,修改证书和密钥路径,加路由信息
 ## server 10.0.1.0 255.255.255.0 子网为tun虚拟网卡的局域网，仅vpn服务器和客户端拥有
-## push 172.16.30.102 255.255.255.0 表示该目标地址通过tun进行路由
+## push 172.16.30.102 255.255.255.0 表示该目标地址通过tun进行路由(这个地址甚至可以是个公网IP)
 ## 启动
 # openvpn --daemon --config /etc/openvpn/server.conf
 systemctl start openvpn@server
@@ -51,7 +52,7 @@ apt install openvpn
 ## 配置
 vim /etc/openvpn/client.conf #参考后面的配置文件
 ## 拷贝服务器生成的文件
-cp ca.crt client.key client.crt /etc/openvpn
+cp ca.crt client.key client.crt ta.key /etc/openvpn
 ## 启动
 systemctl start openvpn@client
 systemctl enable openvpn@client
@@ -87,39 +88,44 @@ systemctl restart openvpn@client
 
 
 #server.conf
-port 1194                                    #端口
-proto udp                                    #协议
-dev tun                                      #采用路由隧道模式
-ca /opt/easy-rsa/pki/ca.crt                  #ca证书的位置
-cert /opt/easy-rsa/pki/issued/server.crt     #服务端公钥的位置
-key /opt/easy-rsa/pki/private/server.key     #服务端私钥的位置
-dh /opt/easy-rsa/pki/dh.pem                  #证书校验算法  
-server 10.8.0.0 255.255.255.0                #给客户端分配的地址池
-push "route 172.16.1.0 255.255.255.0"        #允许客户端访问的内网网段
-ifconfig-pool-persist ipp.txt                #地址池记录文件位置，未来让openvpn客户端固定ip地址使用的
-keepalive 10 120                             #存活时间，10秒ping一次，120秒如果未收到响应则视为短线
-max-clients 100                              #最多允许100个客户端连接
-status openvpn-status.log                    #日志位置，记录openvpn状态
-log /var/log/openvpn.log                     #openvpn日志记录位置
-verb 3                                       #openvpn版本
-client-to-client                             #允许客户端与客户端之间通信
-persist-key                                  #通过keepalive检测超时后，重新启动VPN，不重新读取
-persist-tun                                  #检测超时后，重新启动VPN，一直保持tun是linkup的，否则网络会先linkdown然后再linkup
-
+port 1194                                           #端口
+proto udp                                           #协议
+dev tun                                             #采用路由隧道模式
+ca /etc/openvpn/keys/ca.crt                         #ca证书的位置
+cert /etc/openvpn/keys/server.crt                   #服务端公钥的位置
+key /etc/openvpn/keys/server.key                    #服务端私钥的位置
+dh /etc/openvpn/keys/dh.pem                         #证书校验算法  
+tls-auth /etc/openvpn/keys/ta.key 0                 #tls-auth密钥的位置
+server 10.8.0.0 255.255.255.0                       #给客户端分配的地址池
+push "route 172.16.1.0 255.255.255.0"               #允许客户端访问的内网网段
+ifconfig-pool-persist ipp.txt                       #地址池记录文件位置，未来让openvpn客户端固定ip地址使用的
+keepalive 10 120                                    #存活时间，10秒ping一次，120秒如果未收到响应则视为短线
+max-clients 100                                     #最多允许100个客户端连接
+status openvpn-status.log                           #日志位置，记录openvpn状态
+log /var/log/openvpn.log                            #openvpn日志记录位置
+verb 3                                              #openvpn版本
+client-to-client                                    #允许客户端与客户端之间通信
+persist-key                                         #通过keepalive检测超时后，重新启动VPN，不重新读取
+persist-tun                                         #检测超时后，重新启动VPN，一直保持tun是linkup的，否则网络会先linkdown然后再linkup
+script-security 3                                   #允许使用自定义脚本
+auth-user-pass-verify /etc/openvpn/check.sh via-env #指定认证脚本
+username-as-common-name                             #用户密码登陆方式验证
 
 
 # client.conf
-client
-dev tun
-proto udp
-remote 12.34.56.78 1194
+client                  #指定为客户端
+dev tun                 #采用路由隧道模式
+proto udp               #协议
+remote 12.34.56.78 1194 #服务器地址
 resolv-retry infinite
 nobind
-ca ca.crt
-cert client.crt
-key client.key
-verb 3
-persist-key
+ca ca.crt               #ca证书的位置
+cert client.crt         #客户端证书的位置
+key client.key          #客户端私钥的位置
+tls-auth ta.key 1       #tls-auth密钥的位置(注意这里是1，服务器是0)
+verb 3                  #openvpn版本
+persist-key             #通过keepalive检测超时后，重新启动VPN，不重新读取
+auth-user-pass          #用户密码登陆方式验证
 
 
 # check.sh

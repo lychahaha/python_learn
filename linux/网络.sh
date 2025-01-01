@@ -42,6 +42,7 @@ tcpdump #linux里的wireshark（安卓用vnet）
 tcpdump host 123.45.67.89 #抓取特定主机
 tcpdump src host 123.45.67.89 #指定发送源
 tcpdump dst host 123.45.67.89 #指定目标源
+tcpdump net 192.168.1.0/24 #抓取网段
 tcpdump port 8080 #指定端口
 tcpdump tcp #指定协议
 
@@ -62,14 +63,15 @@ nslookup baidu.com # DNS查找
 ##windows: https://eternallybored.org/misc/netcat/
 nc 12.34.56.78 2345 #创建tcp连接（后续可输入任意数据进行传输）
 nc 12.34.56.78 2345 < a.txt #传输文件
-nc -lv 2345 #监听tcp端口
-nc -lv 2345 > a.txt #监听并将接收到的数据写入文件
+nc -l 2345 #监听tcp端口
+nc -l 2345 > a.txt #监听并将接收到的数据写入文件
     -l #监听(listen)
     -v #输出反馈(verbose)
     -u #udp模式
     -k #支持重复连接
     -4 #强制使用ipv4
     -6 #强制使用ipv6
+    -p 12345 #指定客户端的端口
 
 # iperf
 ## 下载
