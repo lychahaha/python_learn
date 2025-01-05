@@ -33,7 +33,7 @@ ifconfig eth0:0 del #删除虚拟网卡
 
 # tcpdump
 tcpdump #linux里的wireshark（安卓用vnet）
-    -i ens33 #指定网卡
+    -i ens33 #指定网卡（输入any表示抓全部网卡）
     -w packets.pcap #指定保存文件（给wireshark用）
     -n #ip显示数字而不是名称
     -nn #ip和端口都显示数字而不是名称
@@ -98,19 +98,25 @@ ip addr add 192.168.1.2/24 dev eth0 #增加ip地址（需指定网卡）
 ip addr delete 192.168.1.2/24 dev eth0 #删除ip地址
 ## route(路由)
 ip route #查看路由
+ip route show table xxx #查看特定路由表（默认看的是main，默认有local/main/default三个路由表）
 ip route add 192.168.1.0/24 via 10.0.0.1 dev eth0 #增加路由（目标网络换成default则是添加默认路由）
 ip route del 192.168.1.0/24 via 10.0.0.1 dev eth0 #删除路由
 ip route del default dev eth0 #删除默认路由
 ip route get 12.34.56.78 #查看该ip作为包的目标ip，这个包要怎么路由
+ip route add 192.168.1.0/24 via 10.0.0.1 dev eth0 table table1 #操作路由表table1，默认操作的是main
+ip route add local 0.0.0.0/0 dev lo #local表示这个流量就是给本地的，不管目标地址是不是本地的
 ### 路由表解释
 192.168.1.0/24 dev eth0 src 192.168.1.3 #192.168.1.0/24表示目标网络/主机，dev eth0表示走哪个网卡，src 192.168.1.3表示本机以什么IP地址发包
 default via 192.168.1.1 dev eth0 src 192.168.1.3 #default表示默认路由，via 192.168.1.1表示通过网关访问（无via则表明是局域网）
 192.168.1.0/24 dev eth0 proto dhcp src 192.168.1.3 #proto dhcp表示是dhcp协议设的路由规则
-192.168.1.0/24 dev eth0 scope link src 192.168.1.3 #scope link表示这个路由规则的作用范围为与指定接口连接的局域网
+192.168.1.0/24 dev eth0 scope link src 192.168.1.3 #scope link表示这个路由规则的作用范围为与指定接口连接的局域网（scope host则是本机）
 192.168.1.0/24 dev eth0 src 192.168.1.3 metric 20 #metric 20表示优先级（越小越优先）
 ## link(接口,网卡)
 ip link #查看网卡
 ip link set eth0 up #启动网卡（关闭是down）
+## rule(路由表策略)
+ip rule #查看路由表策略
+ip rule add fwmark 1 table table1 #增加一个路由表策略，若防火墙mark为1时进入路由表table1
 
 
 # nmcli

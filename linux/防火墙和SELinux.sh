@@ -63,7 +63,7 @@ iptables -A INPUT -p tcp -d 192.168.1.0/24 --dport 22 -j DROP
 -d 12.34.56.78 #目标地址
 --sport 22 #源端口
 --dport 22,23 #目标端口(多个用逗号隔开)
--j ACCEPT #动作(ACCEPT|REJECT|DROP,SNAT|DNAT|REDIRECT|MASQUERAED,TRACE,LOG,自定义链|RETURN,SET)
+-j ACCEPT #动作(ACCEPT|REJECT|DROP,SNAT|DNAT|REDIRECT|MASQUERAED,TRACE,MARK,LOG,自定义链|RETURN,SET)
 -m xx #使用不同模块的功能
 
 --icmp-type time-exceeded #指定icmp包的类型
@@ -74,6 +74,7 @@ iptables -A INPUT -p tcp -d 192.168.1.0/24 --dport 22 -j DROP
 -j MASQUERAED --to-ports 30000-40000 #指定用来映射的端口（需要在前面指定协议）
 -j SET --add-set set_x src #将源ip添加到指定集合里
 -j SET --add-set set_x src --exist #如果源ip就在指定集合中,会刷新时间
+-j MARK --set-mark 1 #设置具体的标识值
 
 -m conntrack
     --ctstate NEW #tcp连接的状态(NEW|RELATED|ESTABLISHED|INVALID)
@@ -152,6 +153,9 @@ cat /var/log/kern.log | grep TRACE #查看log
 ### 打log
 iptables -A INPUT -s 192.168.1.2 -j LOG --log-prefix "[hehe]"
 cat /var/log/kern.log | grep hehe #查看log
+
+### 打mark
+iptables -t mangle -A PREROUTING -p tcp -s 192.168.1.2 --sport 1234 -j MARK --set-mark 567
 
 
 ## 保存配置
