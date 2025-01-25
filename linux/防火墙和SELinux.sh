@@ -158,8 +158,9 @@ cat /var/log/kern.log | grep hehe #查看log
 iptables -t mangle -A PREROUTING -p tcp -s 192.168.1.2 --sport 1234 -j MARK --set-mark 567
 
 
-## 保存配置
-iptables-save > /root/xxx.bak
+## 保存/读取配置
+iptables-save > /root/xxx.txt
+iptables-restore < /root/xxx.txt
 
 
 

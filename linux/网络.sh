@@ -114,9 +114,18 @@ default via 192.168.1.1 dev eth0 src 192.168.1.3 #default表示默认路由，vi
 ## link(接口,网卡)
 ip link #查看网卡
 ip link set eth0 up #启动网卡（关闭是down）
+ip link set dev tap0 address 00:11:22:33:44:55 #给设备增加mac地址
+ip link add veth0 type veth peer name veth1 #创建一对veth(veth0和veth1)
 ## rule(路由表策略)
 ip rule #查看路由表策略
 ip rule add fwmark 1 table table1 #增加一个路由表策略，若防火墙mark为1时进入路由表table1
+## tuntap
+ip tuntap add mode tun tun0 #新增一个tun虚拟设备
+ip tuntap add mode tun tap0 #新增一个tap虚拟设备
+ip tuntap del mode tun tun0 #删除tun设备(tap也是类似的写法)
+
+
+
 
 
 # nmcli
